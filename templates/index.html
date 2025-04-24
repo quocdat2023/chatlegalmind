@@ -4132,22 +4132,25 @@
 						// Format top matching documents
 						var documentsHtml = response.top_matching_documents.map(doc => `
 							<div class="ctext-wrap-content col-sm-6">    
-									<div class="card pt-3">
+									<div class="card">
 										<h6 class="card-header">
 											<div class="d-flex align-items-center">
 													<div class="flex-shrink-0 ms-1 me-3">
-														<img src="https://themesdesign.in/chaton/layouts/assets/images/pdf-file.png" alt="" class="avatar-xs">
+														<img src="https://www.pngmart.com/files/23/Pdf-Icon-PNG-Image.png" alt="" class="avatar-xs">
 													</div>
 													<div class="flex-grow-1 overflow-hidden">
 														<h5 class="fs-14 mb-1"><a href="#" class="text-truncate p-0">${doc.source}</a>
 														</h5>
-														<p class="text-muted text-truncate fs-13 mb-0">12.5 MB</p>
+														<div class="d-flex align-items-center">
+															<img src="https://static.vecteezy.com/system/resources/previews/030/954/285/non_2x/similarity-icon-vector.jpg" alt="" class="avatar-xs me-2" style="width: 15px; height: 15px">
+															<p class="text-muted text-truncate fs-13 mb-0">${Number(doc.distance).toFixed(2)}</p>
+														</div>
 													</div>
 												</div>
 											</div>
 										</h6>
 											<div class="card-body">
-												<p class="card-text"> ${doc.text}</p>
+												<p class="card-text"> ${doc.text} ...</p>
 											
 									</div>					
 							</div>
