@@ -7,30 +7,30 @@ gemini:
     - "AIzaSyA2RKWDRHuSVm8X5ez30-5NWbF0F4QdJGo"
     - "AIzaSyCya9OpC1EgO_j3ARee7OrBPJqjlj4_xso"
 
-  # Optional: Generation Settings
+ # Optional: Generation Settings
   generation:
-    temperature: 0.7
+    temperature: 0.5
     top_p: 1.0
     top_k: 40
-    max_output_tokens: 8192
+    max_output_tokens: 16384
     stop_sequences: []
     response_mime_type: "text/plain"
 
   # Optional: Rate Limiting
   rate_limits:
-    requests_per_minute: 60
+    requests_per_minute: 120
     reset_window: 60  # seconds
 
   # Optional: Strategies
   strategies:
-    content: "fallback"  # round_robin, fallback, retry
-    key_rotation: "smart_cooldown"  # smart_cooldown, sequential, round_robin, least_used
+    content: "fallback"
+    key_rotation: "smart_cooldown"
 
   # Optional: Retry Settings
   retry:
-    max_attempts: 3
+    max_attempts: 5
     delay: 30  # seconds
 
   # Optional: Model Settings
   default_model: "gemini-2.0-flash-exp"
-  system_instruction: null  # Custom system prompt
+  system_instruction: null

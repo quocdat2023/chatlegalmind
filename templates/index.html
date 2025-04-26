@@ -4005,40 +4005,39 @@
 		integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
 		crossorigin="anonymous" referrerpolicy="no-referrer" />
 	<script>
-		$(document).ready(function () {
-			function scrollToBottom() {
-				window.scrollTo({
-					top: document.body.scrollHeight,
-					behavior: "smooth"
-				});
-			}
-			// Khi người dùng nhấn nút gửi
-			$('.send_message').click(function () {
-				sendMessage();
+	$(document).ready(function () {
+    function scrollToBottom() {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: "smooth"
+        });
+    }
 
-			});
+    // Khi người dùng nhấn nút gửi
+    $('.send_message').click(function () {
+        sendMessage();
+    });
 
-			// Sự kiện khi nhấn Enter trong ô nhập liệu
-			$('.message_input').keypress(function (e) {
-				if (e.which === 13) { // Kiểm tra nếu phím nhấn là Enter
-					sendMessage();
+    // Sự kiện khi nhấn Enter trong ô nhập liệu
+    $('.message_input').keypress(function (e) {
+        if (e.which === 13) { // Kiểm tra nếu phím nhấn là Enter
+            sendMessage();
+        }
+    });
 
-				}
-			});
+    function sendMessage() {
+        var message = $('.message_input').val().trim();
+        if (message !== '') {
+            $('.chat-input-typing').show(); // Hiển thị "đang nhập..."
+            $('.send_message').prop('disabled', true); // Vô hiệu hóa nút gửi
+            var messageId = 'user-message-' + Date.now();
 
-			function sendMessage() {
-				var message = $('.message_input').val().trim();
-				if (message !== '') {
-					$('.chat-input-typing').show(); // Hiển thị "đang nhập..."
-					$('.send_message').prop('disabled', true); // Vô hiệu hóa nút gửi
-					var messageId = 'user-message-' + Date.now();
-
-					var messageHtml = `
+            var messageHtml = `
                 <li class="chat-list right" id="${messageId}">
                     <div class="conversation-list">
                         <div class="user-chat-content">
                             <div class="ctext-wrap">
-                                <div class="ctext-wrap-content" style="background-color: #2E8B57 ;">
+                                <div class="ctext-wrap-content" style="background-color: #2E8B57;">
                                     <p class="mb-0 ctext-content">${message}</p>
                                 </div>
                             </div>
@@ -4052,238 +4051,167 @@
                     </div>
                 </li>`;
 
-					$('#users-conversation').append(messageHtml);
-					$('#users-conversation').scrollTop($('#users-conversation')[0].scrollHeight);
-					$('.message_input').val('');
-					sendMessageToBackend(message);
-				}
-			}
+            $('#users-conversation').append(messageHtml);
+            $('#users-conversation').scrollTop($('#users-conversation')[0].scrollHeight);
+            $('.message_input').val('');
+            sendMessageToBackend(message);
+        }
+    }
 
-			// function sendMessageToBackend(message) {
-			// 	$.ajax({
-			// 		url: 'http://127.0.0.1:5000/query',
-			// 		type: 'POST',
-			// 		contentType: 'application/json',
-			// 		data: JSON.stringify({ question: message }),
-			// 		success: function (response) {
+    function sendMessageToBackend(message) {
+        $.ajax({
+            url: 'http://127.0.0.1:5000/query',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ question: message }),
+            success: function (response) {
+                $('.chat-input-typing').hide(); // Ẩn chỉ báo đang nhập
+                scrollToBottom();
+                $('.send_message').prop('disabled', false); // Kích hoạt lại nút gửi
 
-			// 			$('.chat-input-typing').hide(); // Ẩn phần typing khi có phản hồi
-			// 			scrollToBottom();
-			// 			$('.send_message').prop('disabled', false); // Kích hoạt lại nút gửi
+                var responseId = 'assistant-response-' + Date.now();
+                var formattedResponse = formatResponse(response.final_response);
 
-			// 			var responseId = 'assistant-response-' + Date.now();
-			// 			var formattedResponse = formatResponse(response.final_response);
-
-			// 			var responseHtml = `
-			//         <li class="chat-list left" id="${responseId}">
-			//             <div class="conversation-list">
-			//                 <div class="chat-avatar">
-			//                     <img src="https://res.cloudinary.com/dz9j1pqvk/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1737823658/itzone2023/devices/thi%e1%ba%bft_k%e1%ba%bf_ch%c6%b0a_c%c3%b3_t%c3%aan_4_jy6kt6.png" alt="">
-			//                 </div>
-			//                 <div class="user-chat-content">
-			//                     <div class="ctext-wrap">
-			//                         <div class="ctext-wrap-content">
-			//                             <p class="mb-0 ctext-content" id="response-text-${responseId}"></p>
-			//                         </div>
-			//                     </div>
-			// 					<div class="ctext-wrap">
-			// 						<div class="ctext-wrap-content" id="response-text-${responseId}">
-			// 								<p class="mb-0 ctext-content" id="response-text-document${responseId}"></p>
-			// 						</div>
-			// 					</div>
-			//                     <div class="conversation-name">
-			//                         <small class="text-muted time">${new Date().toLocaleTimeString()}</small>
-			//                         <span class="text-success check-message-icon">
-			//                             <i class="fa-solid fa-check-double"></i>
-			//                         </span>
-			//                     </div>
-			//                 </div>
-			//             </div>
-			//         </li>`;
-
-			// 			$('#users-conversation').append(responseHtml);
-			// 			$('#users-conversation').scrollTop($('#users-conversation')[0].scrollHeight);
-			// 			typeResponse(formattedResponse, responseId);
-
-
-			// 		},
-			// 		error: function () {
-			// 			$('.chat-input-typing').hide();
-			// 			scrollToBottom();
-			// 			$('.send_message').prop('disabled', false);
-			// 			alert('Lỗi khi gửi tin nhắn, vui lòng thử lại.');
-			// 		}
-			// 	});
-			// }
-			function sendMessageToBackend(message) {
-				$.ajax({
-					url: 'http://127.0.0.1:5000/query',
-					type: 'POST',
-					contentType: 'application/json',
-					data: JSON.stringify({ question: message }),
-					success: function (response) {
-						$('.chat-input-typing').hide(); // Hide typing indication when response is received
-						scrollToBottom();
-						$('.send_message').prop('disabled', false); // Enable the send button
-
-						var responseId = 'assistant-response-' + Date.now();
-						var formattedResponse = formatResponse(response.final_response);
-
-						// Format top matching documents
-						var documentsHtml = response.top_matching_documents.map(doc => `
-							<div class="ctext-wrap-content col-sm-6">    
-									<div class="card">
-										<h6 class="card-header">
-											<div class="d-flex align-items-center">
-													<div class="flex-shrink-0 ms-1 me-3">
-														<img src="https://www.pngmart.com/files/23/Pdf-Icon-PNG-Image.png" alt="" class="avatar-xs">
-													</div>
-													<div class="flex-grow-1 overflow-hidden">
-														<h5 class="fs-14 mb-1"><a href="#" class="text-truncate p-0">${doc.source}</a>
-														</h5>
-														<div class="d-flex align-items-center">
-															<img src="https://cdn-icons-png.flaticon.com/512/5519/5519863.png" alt="" class="avatar-xs me-2" style="width: 15px; height: 15px">
-															<p class="text-muted text-truncate fs-13 mb-0">${Number(doc.distance).toFixed(2)}</p>
-														</div>
-													</div>
-												</div>
-											</div>
-										</h6>
-											<div class="card-body">
-												<p class="card-text"> ${doc.text} ...</p>
-											
-									</div>					
-							</div>
-						`).join('');
-
-						var responseHtml = `
-                <li class="chat-list left" id="${responseId}">
-                    <div class="conversation-list">
-                        <div class="chat-avatar">
-                            <img src="https://res.cloudinary.com/dz9j1pqvk/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1737823658/itzone2023/devices/thi%e1%ba%bft_k%e1%ba%bf_ch%c6%b0a_c%c3%b3_t%c3%aan_4_jy6kt6.png" alt="">
-                        </div>
-                        <div class="user-chat-content" style="width: 80%">
-                            <div class="ctext-wrap">
-                                <div class="ctext-wrap-content">
-                                    <p class="mb-0 ctext-content" id="response-text-${responseId}">${formattedResponse}</p>
+                // Format top matching documents (bản án)
+                var bananDocumentsHtml = (response.top_banan_documents || []).map(doc => `
+                    <div class="ctext-wrap-content col-sm-6">
+                        <div class="card">
+                            <h6 class="card-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0 ms-1 me-3">
+                                        <img src="https://www.pngmart.com/files/23/Pdf-Icon-PNG-Image.png" alt="" class="avatar-xs">
+                                    </div>
+                                    <div class="flex-grow-1 overflow-hidden">
+                                        <h5 class="fs-14 mb-1"><a href="#" class="text-truncate p-0">${doc.source}</a></h5>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/5519/5519863.png" alt="" class="avatar-xs me-2" style="width: 15px; height: 15px">
+                                            <p class="text-muted text-truncate fs-13 mb-0">${Number(doc.distance).toFixed(2)}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-							<div class="conversation-name"><small class="text-muted time">Trích dẫn</small> <span class="text-success check-message-icon"><i class="bx bx-check-double"></i></span></div>
-                            <div class="ctext-wrap" >
-                                <div class="row" id="response-text-document${responseId}" style="display: none; width: 100%; padding-left: 5px">
-								</div>
-                            </div>
-                            <div class="conversation-name">
-                                <small class="text-muted time">${new Date().toLocaleTimeString()}</small>
-                                <span class="text-success check-message-icon">
-                                    <i class="fa-solid fa-check-double"></i>
-                                </span>
+                            </h6>
+                            <div class="card-body">
+                                <p class="card-text">${doc.text.substring(0, 200)}...</p>
                             </div>
                         </div>
                     </div>
-                </li>`;
+                `).join('');
 
-						$('#users-conversation').append(responseHtml);
-						$('#users-conversation').scrollTop($('#users-conversation')[0].scrollHeight);
+                // Format top matching án lệ documents
+                var anleDocumentsHtml = (response.top_anle_documents || []).map(doc => `
+                    <div class="ctext-wrap-content col-sm-6">
+                        <div class="card">
+                            <h6 class="card-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0 ms-1 me-3">
+                                        <img src="https://www.pngmart.com/files/23/Pdf-Icon-PNG-Image.png" alt="" class="avatar-xs">
+                                    </div>
+                                    <div class="flex-grow-1 overflow-hidden">
+                                        <h5 class="fs-14 mb-1"><a href="#" class="text-truncate p-0">${doc.source}</a></h5>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/5519/5519863.png" alt="" class="avatar-xs me-2" style="width: 15px; height: 15px">
+                                            <p class="text-muted text-truncate fs-13 mb-0">${Number(doc.distance).toFixed(2)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </h6>
+                            <div class="card-body">
+                                <p class="card-text">${doc.text.substring(0, 200)}...</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
 
-						// Type out the main response
-						typeResponse(formattedResponse, `response-text-${responseId}`, () => {
-							// After the response is fully typed out, show and type out the documents
-							$(`#response-text-document${responseId}`).html(documentsHtml).show();
-						});
+                // Kết hợp cả bản án và án lệ
+                var documentsHtml = bananDocumentsHtml + anleDocumentsHtml;
 
-					},
-					error: function () {
-						$('.chat-input-typing').hide();
-						scrollToBottom();
-						$('.send_message').prop('disabled', false);
-						alert('Lỗi khi gửi tin nhắn, vui lòng thử lại.');
-					}
-				});
-			}
+                var responseHtml = `
+                    <li class="chat-list left" id="${responseId}">
+                        <div class="conversation-list">
+                            <div class="chat-avatar">
+                                <img src="https://res.cloudinary.com/dz9j1pqvk/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1737823658/itzone2023/devices/thi%E1%BA%BFt_k%E1%BA%BF_ch%C6%B0a_c%C3%B3_t%C3%AAn_4_jy6kt6.png" alt="">
+                            </div>
+                            <div class="user-chat-content" style="width: 100%">
+                                <div class="ctext-wrap">
+                                    <div class="ctext-wrap-content">
+                                        <p class="mb-0 ctext-content" id="response-text-${responseId}"></p>
+                                    </div>
+                                </div>
+                                <div class="conversation-name">
+                                    <small class="text-muted time" id="trich-dan-${responseId}" style="display: none;">Trích dẫn tham khảo</small>
+                                    <span class="text-success check-message-icon">
+                                        <i class="bx bx-check-double"></i>
+                                    </span>
+                                </div>
+                                <div class="ctext-wrap">
+                                    <div class="row" id="response-text-document-${responseId}" style="display: none; width: 100%; padding-left: 5px">
+                                        ${documentsHtml}
+                                    </div>
+                                </div>
+                                <div class="conversation-name">
+                                    <small class="text-muted time">${new Date().toLocaleTimeString()}</small>
+                                    <span class="text-success check-message-icon">
+                                        <i class="fa-solid fa-check-double"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>`;
 
-			function formatResponse(responseText) {
-				var formattedResponses = responseText
-					.replace(/\n\n/g, '<br>')
-					.replace(/\-/g, '<b>-</b>')
-					.replace(/\n/g, '<br>')
-					.replace('```text', '')
-					.replace('```', '')
-					.replace('_', '')
-					.replace(/([A-Z]\.\s)/g, (match) => `<b>${match}</b>`)
-					.replace(/(\d+\.\s)/g, (match) => `<b>${match}</b>`) // Xử lý số thứ tự có dấu chấm
-					.replace(/(\*\*)(.*?)\1/g, (match, p1, p2, offset, string) => {
-						var occurrences = (string.slice(0, offset).match(/\*\*/g) || []).length;
-						return occurrences % 2 === 0 ? `<b>${p2}</b>` : `</b>${p2}`;
-					})
+                $('#users-conversation').append(responseHtml);
+                $('#users-conversation').scrollTop($('#users-conversation')[0].scrollHeight);
 
-				var formattedResponsess = formattedResponses.replace(/(\*)(.*?)\1/g, (match, p1, p2, offset, string) => {
-					var occurrences = (string.slice(0, offset).match(/\*/g) || []).length;
-					return occurrences % 2 === 0 ? `<i>${p2}</i>` : `</i>${p2}`;
-				});
+                // Gõ văn bản phản hồi chính
+                typeResponse(formattedResponse, `response-text-${responseId}`, () => {
+                    // Sau khi gõ xong phản hồi, hiển thị Trích dẫn tham khảo và tài liệu
+                    $(`#trich-dan-${responseId}`).css('display', 'block');
+                    $(`#response-text-document-${responseId}`).fadeIn(400);
+                });
+            },
+            error: function () {
+                $('.chat-input-typing').hide();
+                scrollToBottom();
+                $('.send_message').prop('disabled', false);
+                alert('Lỗi khi gửi tin nhắn, vui lòng thử lại.');
+            }
+        });
+    }
 
+    function formatResponse(responseText) {
+        var formattedResponse = responseText
+            .replace(/\n\n/g, '<br>')
+            .replace(/\-/g, '<b>-</b>')
+            .replace(/\n/g, '<br>')
+            .replace(/```text/g, '')
+            .replace(/```/g, '')
+            .replace(/_/g, '')
+            .replace(/([A-Z]\.\s)/g, (match) => `<b>${match}</b>`)
+            .replace(/(\d+\.\s)/g, (match) => `<b>${match}</b>`) // Xử lý số thứ tự
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') // Chuyển **text** thành in đậm
+            .replace(/\*(.*?)\*/g, '<i>$1</i>'); // Chuyển *text* thành nghiêng
 
+        return formattedResponse
+            .replace(/I\. Giới thiệu:/g, '<br><b>I. Giới thiệu:</b>')
+            .replace(/II\. Nội dung án lệ tìm được:/g, '<br><b>II. Nội dung án lệ tìm được:</b>')
+            .replace(/III\. Phân tích tình huống:/g, '<br><b>III. Phân tích tình huống:</b>')
+            .replace(/IV\. Lập luận pháp lý:/g, '<br><b>IV. Lập luận pháp lý:</b>')
+            .replace(/V\. Kết luận:/g, '<br><b>V. Kết luận:</b>');
+    }
 
-				return formattedResponsess.replace(/I\. Giới thiệu:/g, '<br><b>I. Giới thiệu:</b>') // Định dạng tiêu đề
-					.replace(/II\. Nội dung án lệ tìm được:/g, '<br><b>II. Nội dung án lệ tìm được:</b>')
-					.replace(/III\. Phân tích tình huống:/g, '<br><b>III. Phân tích tình huống:</b>')
-					.replace(/IV\. Lập luận pháp lý:/g, '<br><b>IV. Lập luận pháp lý:</b>')
-					.replace(/V\. Kết luận:/g, '<br><b>V. Kết luận:</b>')
-					.replace('_', '');
-
-			}
-
-
-
-			// function typeResponse(response, elementId) {
-			// 	var index = 0;
-			// 	var responseElement = $(`#response-text-${elementId}`);
-
-			// 	// Thay thế toàn bộ nội dung trước khi gõ
-			// 	var formattedResponse = response
-			// 		.replace('<i>Nội dung:</i>>', '<b>Nội dung:</b>')
-			// 		.replace('<i>>Giải pháp pháp lý:</i>>', '<b>Giải pháp pháp lý:</b>')
-			// 		.replace('<i>>Tình huống án lệ:</i>>', '<b>Tình huống án lệ:</b>')
-			// 		.replace('<i>>Phân tích tình huống:</i>>', '<b>Phân tích tình huống:</b>')
-			// 		.replace(/([A-F]\.\s)/g, (match) => `<b>${match}</b>`)
-			// 		.replace(/(?:^|\s)(I|V)\.\s/g, (match) => `<br><b>${match.trim()}</b> `);
-
-			// 	var interval = setInterval(function () {
-			// 		if (index < formattedResponse.length) {
-			// 			responseElement.html(formattedResponse.substring(0, index + 1).replace('_', ''));
-			// 			index++;
-			// 		} else {
-			// 			clearInterval(interval);
-			// 		}
-			// 	}, 5); // Hiệu ứng gõ chậm hơn
-			// 	typeResponse(documentsHtml, responseId);
-
-			// }
-			function typeResponse(response, elementId, callback) {
-				var index = 0;
-				var responseElement = $(`#${elementId}`);
-
-				// Set the full response to the element before typing
-				responseElement.html(response);
-
-				// If there is a callback, delay its execution
-				if (callback) {
-					setTimeout(() => {
-						var interval = setInterval(function () {
-							if (index < response.length) {
-								responseElement.html(response.substring(0, index + 1));
-								index++;
-							} else {
-								clearInterval(interval);
-								if (callback) callback(); // Call the callback after typing is complete
-							}
-						}, 5); // Typing speed
-					}, 500); // Delay before showing documents
-				}
-			}
-
-		});
-
+    function typeResponse(response, elementId, callback) {
+        var index = 0;
+        var responseElement = $(`#${elementId}`);
+        var interval = setInterval(function () {
+            if (index < response.length) {
+                responseElement.html(response.substring(0, index + 1));
+                index++;
+            } else {
+                clearInterval(interval);
+                if (callback) callback(); // Gọi callback sau khi gõ xong
+            }
+        }, 5); // Tốc độ gõ
+    }
+});
 
 
 
