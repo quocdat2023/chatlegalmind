@@ -34,8 +34,8 @@
 	<link href="https://themesdesign.in/chaton/layouts/assets/css/app.min.css" id="app-style" rel="stylesheet"
 		type="text/css" />
 	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-
 	<style>
+	
 		.bg-primary {
 			background-color: #2E8B57 !important;
 			;
@@ -75,7 +75,6 @@
 		.card-header {
 			background-color: #f8f9fa !important;
 		}
-
 	</style>
 </head>
 
@@ -527,7 +526,7 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0">Hành chính</p>
+													<p class="text-truncate chat-username mb-0"  style="text-align: left">Hành chính</p>
 													<p class="text-truncate text-muted fs-13 mb-0">Về quyết định hành
 														chính là đối tượng khởi kiện vụ án hành chính
 													</p>
@@ -544,7 +543,7 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0">Dân sự</p>
+													<p class="text-truncate chat-username mb-0"  style="text-align: left">Dân sự</p>
 													<p class="text-truncate text-muted fs-13 mb-0">Về xác định di sản
 														thừa kế là quyền sử dụng đất trong trường hợp di chúc không thể
 														hiện diện tích đất cụ thể
@@ -560,7 +559,7 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0">Kinh doanh, thương mại
+													<p class="text-truncate chat-username mb-0"  style="text-align: left">Kinh doanh, thương mại
 													</p>
 													<p class="text-truncate text-muted fs-13 mb-0">Về hiệu lực của hợp
 														đồng thế chấp trong trường hợp tài sản thế chấp là nhà đất do
@@ -579,7 +578,7 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0">Hình sự </p>
+													<p class="text-truncate chat-username mb-0"  style="text-align: left">Hình sự </p>
 													<p class="text-truncate text-muted fs-13 mb-0">Về hành vi gian dối
 														nhằm tiếp cận tài sản trong tội “Cướp giật tài sản”
 													</p>
@@ -594,7 +593,7 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0">Dân sự</p>
+													<p class="text-truncate chat-username mb-0"  style="text-align: left">Dân sự</p>
 													<p class="text-truncate text-muted fs-13 mb-0">Về định khung hình
 														phạt và tình tiết định khung tăng nặng “có tổ chức” trong tội
 														“Bắt cóc nhằm chiếm đoạt tài sản”
@@ -609,7 +608,7 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0">Hôn nhân và gia đình</p>
+													<p class="text-truncate chat-username mb-0"  style="text-align: left">Hôn nhân và gia đình</p>
 													<p class="text-truncate text-muted fs-13 mb-0">Quyết định giám đốc
 														thẩm số 04/2021/HNGĐ-GĐT ngày 07/7/2021 của Hội đồng Thẩm phán
 														Toà án nhân dân tối cao về việc dân sự “Yêu cầu hủy việc kết hôn
@@ -1894,11 +1893,12 @@
 												</button>
 											</div>
 											<div class="links-list-item" data-bs-toggle="tooltip"
-												data-bs-trigger="hover" data-bs-placement="top" title="Emoji">
+												data-bs-trigger="hover" data-bs-placement="top"
+												title="Soạn thảo bản án">
 												<button type="button"
 													class="btn btn-link text-decoration-none btn-lg waves-effect emoji-btn"
-													id="emoji-btn">
-													<i class="fa fa-smile align-middle"></i>
+													id="emoji-btn" onclick="submitJudgment()">
+													<i class="fa fa-book align-middle"></i>
 												</button>
 											</div>
 										</div>
@@ -4005,34 +4005,34 @@
 		integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
 		crossorigin="anonymous" referrerpolicy="no-referrer" />
 	<script>
-	$(document).ready(function () {
-    function scrollToBottom() {
-        window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: "smooth"
-        });
-    }
+		$(document).ready(function () {
+			function scrollToBottom() {
+				window.scrollTo({
+					top: document.body.scrollHeight,
+					behavior: "smooth"
+				});
+			}
 
-    // Khi người dùng nhấn nút gửi
-    $('.send_message').click(function () {
-        sendMessage();
-    });
+			// Khi người dùng nhấn nút gửi
+			$('.send_message').click(function () {
+				sendMessage();
+			});
 
-    // Sự kiện khi nhấn Enter trong ô nhập liệu
-    $('.message_input').keypress(function (e) {
-        if (e.which === 13) { // Kiểm tra nếu phím nhấn là Enter
-            sendMessage();
-        }
-    });
+			// Sự kiện khi nhấn Enter trong ô nhập liệu
+			$('.message_input').keypress(function (e) {
+				if (e.which === 13) { // Kiểm tra nếu phím nhấn là Enter
+					sendMessage();
+				}
+			});
 
-    function sendMessage() {
-        var message = $('.message_input').val().trim();
-        if (message !== '') {
-            $('.chat-input-typing').show(); // Hiển thị "đang nhập..."
-            $('.send_message').prop('disabled', true); // Vô hiệu hóa nút gửi
-            var messageId = 'user-message-' + Date.now();
+			function sendMessage() {
+				var message = $('.message_input').val().trim();
+				if (message !== '') {
+					$('.chat-input-typing').show(); // Hiển thị "đang nhập..."
+					$('.send_message').prop('disabled', true); // Vô hiệu hóa nút gửi
+					var messageId = 'user-message-' + Date.now();
 
-            var messageHtml = `
+					var messageHtml = `
                 <li class="chat-list right" id="${messageId}">
                     <div class="conversation-list">
                         <div class="user-chat-content">
@@ -4051,29 +4051,29 @@
                     </div>
                 </li>`;
 
-            $('#users-conversation').append(messageHtml);
-            $('#users-conversation').scrollTop($('#users-conversation')[0].scrollHeight);
-            $('.message_input').val('');
-            sendMessageToBackend(message);
-        }
-    }
+					$('#users-conversation').append(messageHtml);
+					$('#users-conversation').scrollTop($('#users-conversation')[0].scrollHeight);
+					$('.message_input').val('');
+					sendMessageToBackend(message);
+				}
+			}
 
-    function sendMessageToBackend(message) {
-        $.ajax({
-            url: 'http://127.0.0.1:5000/query',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ question: message }),
-            success: function (response) {
-                $('.chat-input-typing').hide(); // Ẩn chỉ báo đang nhập
-                scrollToBottom();
-                $('.send_message').prop('disabled', false); // Kích hoạt lại nút gửi
+			function sendMessageToBackend(message) {
+				$.ajax({
+					url: 'http://127.0.0.1:5000/query',
+					type: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify({ question: message }),
+					success: function (response) {
+						$('.chat-input-typing').hide(); // Ẩn chỉ báo đang nhập
+						scrollToBottom();
+						$('.send_message').prop('disabled', false); // Kích hoạt lại nút gửi
 
-                var responseId = 'assistant-response-' + Date.now();
-                var formattedResponse = formatResponse(response.final_response);
+						var responseId = 'assistant-response-' + Date.now();
+						var formattedResponse = formatResponse(response.final_response);
 
-                // Format top matching documents (bản án)
-                var bananDocumentsHtml = (response.top_banan_documents || []).map(doc => `
+						// Format top matching documents (bản án)
+						var bananDocumentsHtml = (response.top_banan_documents || []).map(doc => `
                     <div class="ctext-wrap-content col-sm-6">
                         <div class="card">
                             <h6 class="card-header">
@@ -4097,8 +4097,8 @@
                     </div>
                 `).join('');
 
-                // Format top matching án lệ documents
-                var anleDocumentsHtml = (response.top_anle_documents || []).map(doc => `
+						// Format top matching án lệ documents
+						var anleDocumentsHtml = (response.top_anle_documents || []).map(doc => `
                     <div class="ctext-wrap-content col-sm-6">
                         <div class="card">
                             <h6 class="card-header">
@@ -4122,10 +4122,10 @@
                     </div>
                 `).join('');
 
-                // Kết hợp cả bản án và án lệ
-                var documentsHtml = bananDocumentsHtml + anleDocumentsHtml;
+						// Kết hợp cả bản án và án lệ
+						var documentsHtml = bananDocumentsHtml + anleDocumentsHtml;
 
-                var responseHtml = `
+						var responseHtml = `
                     <li class="chat-list left" id="${responseId}">
                         <div class="conversation-list">
                             <div class="chat-avatar">
@@ -4158,63 +4158,351 @@
                         </div>
                     </li>`;
 
-                $('#users-conversation').append(responseHtml);
-                $('#users-conversation').scrollTop($('#users-conversation')[0].scrollHeight);
+						$('#users-conversation').append(responseHtml);
+						$('#users-conversation').scrollTop($('#users-conversation')[0].scrollHeight);
 
-                // Gõ văn bản phản hồi chính
-                typeResponse(formattedResponse, `response-text-${responseId}`, () => {
-                    // Sau khi gõ xong phản hồi, hiển thị Trích dẫn tham khảo và tài liệu
-                    $(`#trich-dan-${responseId}`).css('display', 'block');
-                    $(`#response-text-document-${responseId}`).fadeIn(400);
-                });
-            },
-            error: function () {
-                $('.chat-input-typing').hide();
-                scrollToBottom();
-                $('.send_message').prop('disabled', false);
-                alert('Lỗi khi gửi tin nhắn, vui lòng thử lại.');
-            }
-        });
-    }
+						// Gõ văn bản phản hồi chính
+						typeResponse(formattedResponse, `response-text-${responseId}`, () => {
+							// Sau khi gõ xong phản hồi, hiển thị Trích dẫn tham khảo và tài liệu
+							$(`#trich-dan-${responseId}`).css('display', 'block');
+							$(`#response-text-document-${responseId}`).fadeIn(400);
+						});
+					},
+					error: function () {
+						$('.chat-input-typing').hide();
+						scrollToBottom();
+						$('.send_message').prop('disabled', false);
+						alert('Lỗi khi gửi tin nhắn, vui lòng thử lại.');
+					}
+				});
+			}
 
-    function formatResponse(responseText) {
-        var formattedResponse = responseText
-            .replace(/\n\n/g, '<br>')
-            .replace(/\-/g, '<b>-</b>')
-            .replace(/\n/g, '<br>')
-            .replace(/```text/g, '')
-            .replace(/```/g, '')
-            .replace(/_/g, '')
-            .replace(/([A-Z]\.\s)/g, (match) => `<b>${match}</b>`)
-            .replace(/(\d+\.\s)/g, (match) => `<b>${match}</b>`) // Xử lý số thứ tự
-            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') // Chuyển **text** thành in đậm
-            .replace(/\*(.*?)\*/g, '<i>$1</i>'); // Chuyển *text* thành nghiêng
+			function formatResponse(responseText) {
+				var formattedResponse = responseText
+					.replace(/\n\n/g, '<br>')
+					.replace(/\-/g, '<b>-</b>')
+					.replace(/\n/g, '<br>')
+					.replace(/```text/g, '')
+					.replace(/```/g, '')
+					.replace(/_/g, '')
+					.replace(/([A-Z]\.\s)/g, (match) => `<b>${match}</b>`)
+					.replace(/(\d+\.\s)/g, (match) => `<b>${match}</b>`) // Xử lý số thứ tự
+					.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') // Chuyển **text** thành in đậm
+					.replace(/\*(.*?)\*/g, '<i>$1</i>'); // Chuyển *text* thành nghiêng
 
-        return formattedResponse
-            .replace(/I\. Giới thiệu:/g, '<br><b>I. Giới thiệu:</b>')
-            .replace(/II\. Nội dung án lệ tìm được:/g, '<br><b>II. Nội dung án lệ tìm được:</b>')
-            .replace(/III\. Phân tích tình huống:/g, '<br><b>III. Phân tích tình huống:</b>')
-            .replace(/IV\. Lập luận pháp lý:/g, '<br><b>IV. Lập luận pháp lý:</b>')
-            .replace(/V\. Kết luận:/g, '<br><b>V. Kết luận:</b>');
-    }
+				return formattedResponse
+					.replace(/I\. Giới thiệu:/g, '<br><b>I. Giới thiệu:</b>')
+					.replace(/II\. Nội dung án lệ tìm được:/g, '<br><b>II. Nội dung án lệ tìm được:</b>')
+					.replace(/III\. Phân tích tình huống:/g, '<br><b>III. Phân tích tình huống:</b>')
+					.replace(/IV\. Lập luận pháp lý:/g, '<br><b>IV. Lập luận pháp lý:</b>')
+					.replace(/V\. Kết luận:/g, '<br><b>V. Kết luận:</b>');
+			}
 
-    function typeResponse(response, elementId, callback) {
-        var index = 0;
-        var responseElement = $(`#${elementId}`);
-        var interval = setInterval(function () {
-            if (index < response.length) {
-                responseElement.html(response.substring(0, index + 1));
-                index++;
-            } else {
-                clearInterval(interval);
-                if (callback) callback(); // Gọi callback sau khi gõ xong
-            }
-        }, 5); // Tốc độ gõ
-    }
-});
+			function typeResponse(response, elementId, callback) {
+				var index = 0;
+				var responseElement = $(`#${elementId}`);
+				var interval = setInterval(function () {
+					if (index < response.length) {
+						responseElement.html(response.substring(0, index + 1));
+						index++;
+					} else {
+						clearInterval(interval);
+						if (callback) callback(); // Gọi callback sau khi gõ xong
+					}
+				}, 5); // Tốc độ gõ
+			}
+		});
+
+		function sanitizeAndFormatJudgment(rawText) {
+			if (typeof rawText !== 'string') return '';
+
+			let text = rawText.trim();
+
+			// 1. Normalize Unicode
+			text = text.normalize('NFC');
+
+			// 2. Remove unwanted escape characters
+			text = text.replace(/\\n/g, ''); // Xóa \n thừa
+			text = text.replace(/\\\"/g, '"'); // Fix dấu \"
+			text = text.replace(/\\"/g, '"'); // (thêm redundancy safe)
+			text = text.replace(/\\'/g, "'"); // Fix dấu \'
+
+			// 3. Remove any triple backticks or markdown
+			text = text.replace(/```/g, '');
+
+			// 4. Decode if HTML entities accidentally escaped
+			const textarea = document.createElement('textarea');
+			textarea.innerHTML = text;
+			text = textarea.value;
+
+			// 5. Final check: nếu còn ký tự lạ hoặc markdown thì làm sạch tiếp
+			text = text.replace(/[*_`~]/g, '');
+
+			return text;
+		}
 
 
+		// Helper để escape text HTML an toàn
+		function encodeHtml(str) {
+			if (typeof str !== 'string') return '';
+			return str
+				.replace(/&/g, "&amp;")
+				.replace(/</g, "&lt;")
+				.replace(/>/g, "&gt;")
+				.replace(/"/g, "&quot;")
+				.replace(/'/g, "&#039;");
+		}
 
+		// Helper để bao toàn bộ HTML vào khuôn chuẩn
+		function wrapFullHtml(contentHtml) {
+			return `
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bản án</title>
+</head>
+<div class="judgment-body">
+${contentHtml}
+</body>
+</html>
+    `.trim();
+		}
+
+		async function submitJudgment() {
+			// Get and sanitize input
+			const messageInput = document.querySelector('.message_input');
+			const message = messageInput.value.trim();
+
+			// Validate input
+			if (!message) {
+				showError('Vui lòng nhập thông tin vụ án!');
+				return;
+			}
+			if (message.length > 5000) {
+				showError('Thông tin vụ án quá dài! Vui lòng rút ngắn dưới 5000 ký tự.');
+				return;
+			}
+
+			// Generate unique response ID
+			const responseId = `response-${Date.now()}`;
+
+			if (message !== '') {
+				$('.chat-input-typing').show(); // Show typing indicator
+				$('.send_message').prop('disabled', true); // Disable send button
+				const messageId = 'user-message-' + Date.now();
+
+				const messageHtml = `
+            <li class="chat-list right" id="${messageId}">
+                <div class="conversation-list">
+                    <div class="user-chat-content">
+                        <div class="ctext-wrap">
+                            <div class="ctext-wrap-content" style="background-color: #2E8B57;">
+                                <p class="mb-0 ctext-content">${encodeHtml(message)}</p>
+                            </div>
+                        </div>
+                        <div class="conversation-name">
+                            <small class="text-muted time">${new Date().toLocaleTimeString()}</small>
+                            <span class="text-success check-message-icon">
+                                <i class="fa-solid fa-check-double"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </li>`;
+
+				$('#users-conversation').append(messageHtml);
+				$('#users-conversation').scrollTop($('#users-conversation')[0].scrollHeight);
+				$('.message_input').val('');
+			}
+
+			// Show loading state
+			const loadingHtml = `
+        <li class="chat-list left" id="loading-${responseId}">
+            <div class="conversation-list">
+                <div class="chat-avatar">
+                    <img src="https://res.cloudinary.com/dz9j1pqvk/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1737823658/itzone2023/devices/thi%e1%ba%bft_k%e1%ba%bf_ch%c6%b0a_c%c3%b3_t%c3%aan_4_jy6kt6.png" alt="avatar">
+                </div>
+                <div class="user-chat-content" style="width: 100%">
+                    <div class="ctext-wrap">
+                        <div class="ctext-wrap-content">
+                            <p class="mb-0 ctext-content">Đang xử lý...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>`;
+			const conversation = document.querySelector('#users-conversation');
+			conversation.insertAdjacentHTML('beforeend', loadingHtml);
+			scrollToBottom(conversation);
+
+			try {
+				// Make API call
+				const apiUrl = window.location.hostname === 'localhost' ? 'http://127.0.0.1:5000/draft_judgment' : '/draft_judgment';
+				const response = await fetch(apiUrl, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ case_details: message }),
+				});
+
+
+				// Check if response is JSON
+				const contentType = response.headers.get('content-type');
+				if (!contentType || !contentType.includes('application/json')) {
+					throw new Error('Phản hồi từ server không phải JSON');
+				}
+
+				const data = await response.json();
+				document.querySelector(`#loading-${responseId}`)?.remove();
+
+				if (response.ok) {
+					const formattedResponse = data.judgment || 'Không có phản hồi từ hệ thống.';
+					const documents = [
+						...(Array.isArray(data.top_banan_documents) ? data.top_banan_documents : []),
+						...(Array.isArray(data.top_anle_documents) ? data.top_anle_documents : []),
+					];
+
+
+					// Generate documents HTML
+					const documentsHtml = documents.map(doc => `
+                <div class="ctext-wrap-content col-sm-6">
+                    <div class="card">
+                        <h6 class="card-header">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 ms-1 me-3">
+                                    <img src="https://www.pngmart.com/files/23/Pdf-Icon-PNG-Image.png" alt="" class="avatar-xs">
+                                </div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <h5 class="fs-14 mb-1"><a href="#" class="text-truncate p-0">${encodeHtml(doc.source || 'Tài liệu tham khảo')}</a></h5>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/5519/5519863.png" alt="" class="avatar-xs me-2" style="width: 15px; height: 15px">
+                                        <p class="text-muted text-truncate fs-13 mb-0">${Number(doc.distance).toFixed(2)}</p>
+                                    </div>
+                                </div>
+                            </h6>
+                            <div class="card-body">
+                                <p class="card-text">${encodeHtml(doc.case_summary || 'Không có tóm tắt')}...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+					// Create chat HTML
+					const responseHtml = `
+                <li class="chat-list left" id="${responseId}">
+                    <div class="conversation-list">
+                        <div class="chat-avatar">
+                            <img src="https://res.cloudinary.com/dz9j1pqvk/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1737823658/itzone2023/devices/thi%e1%ba%bft_k%e1%ba%bf_ch%c6%b0a_c%c3%b3_t%c3%aan_4_jy6kt6.png" alt="avatar">
+                        </div>
+                        <div class="user-chat-content" style="width: 100%">
+                            <div class="ctext-wrap">
+                                <div class="ctext-wrap-content">
+                                    <p class="mb proportionally-spaced-text ctext-content" id="response-text-${responseId}"></p>
+                                </div>
+                            </div>
+                            <div class="conversation-name">
+                                <small class="text-muted time">${new Date().toLocaleTimeString()}</small>
+                                <span class="text-success check-message-icon">
+                                    <i class="fa-solid fa-check-double"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>`;
+
+					conversation.insertAdjacentHTML('beforeend', responseHtml);
+					$('.chat-input-typing').hide(); // Ẩn chỉ báo đang nhập
+					$('.send_message').prop('disabled', false); // Kích hoạt lại nút gửi
+					scrollToBottom(conversation);
+					const apiResponse = data.judgment; // bản án server trả về
+					const cleanHtml = sanitizeAndFormatJudgment(apiResponse);
+
+					typeResponse(cleanHtml, `response-text-${responseId}`);
+
+
+				} else {
+					showError(`Lỗi: ${data.error || 'Không thể xử lý yêu cầu'}`);
+				}
+			} catch (error) {
+				document.querySelector(`#loading-${responseId}`)?.remove();
+				showError(`Lỗi kết nối: ${error.message}`);
+			}
+		}
+
+		// Helper function to show errors
+		function showError(message) {
+			const errorHtml = `
+        <li class="chat-list left">
+            <div class="conversation-list">
+                <div class="user-chat-content" style="width: 100%">
+                    <div class="ctext-wrap">
+                        <div class="ctext-wrap-content">
+                            <p class="mb-0 ctext-content text-danger">${encodeHtml(message)}</p>
+                        </div>
+                    </div>
+                    <div class="conversation-name">
+                        <small class="text-muted time">${new Date().toLocaleTimeString()}</small>
+                    </div>
+                </div>
+            </div>
+        </li>`;
+			const conversation = document.querySelector('#users-conversation');
+			conversation.insertAdjacentHTML('beforeend', errorHtml);
+			scrollToBottom(conversation);
+		}
+
+		function encodeHtml(str) {
+			if (typeof str !== 'string') return '';
+			return str
+				.replace(/&/g, "&amp;")
+				.replace(/</g, "&lt;")
+				.replace(/>/g, "&gt;")
+				.replace(/"/g, "&quot;")
+				.replace(/'/g, "&#039;")
+				.replace(/html/g, "");
+
+		}
+
+		// Optimized typing function for plain text, or render HTML instantly
+		function typeResponse(content, elementId, callback = () => { }) {
+			const element = document.getElementById(elementId);
+			if (!element) {
+				callback();
+				return;
+			}
+
+			// Nếu nội dung đã có thẻ HTML (<p>, <h2>...) thì chèn thẳng
+			if (/<[a-z][\s\S]*>/i.test(content)) {
+				element.innerHTML = content;
+				callback();
+			} else {
+				// Nếu chỉ là plain text thì typing từng ký tự
+				let i = 0;
+				const chunkSize = 10;
+				function type() {
+					if (i < content.length) {
+						const end = Math.min(i + chunkSize, content.length);
+						element.innerHTML += content.slice(i, end);
+						i = end;
+						requestAnimationFrame(type);
+					} else {
+						callback();
+					}
+				}
+				type();
+			}
+		}
+
+		// Helper function to scroll to bottom conditionally
+		function scrollToBottom(conversation) {
+			const isNearBottom = conversation.scrollHeight - conversation.scrollTop <= conversation.clientHeight + 100;
+			if (isNearBottom) {
+				conversation.scrollTop = conversation.scrollHeight;
+			}
+		}
 	</script>
 
 </body>

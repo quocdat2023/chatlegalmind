@@ -250,7 +250,8 @@ Bạn là chuyên gia tư vấn pháp luật với hơn 30 năm kinh nghiệm tr
    - Chỉ ra các yếu tố cần lưu ý khi áp dụng vào tình huống tương tự.
 
 **Lưu ý quan trọng:**  
-- Không dùng từ giả sử, ví dụ.  
+- Không dùng từ giả sử, ví dụ. 
+- Bỏ phần chào hỏi, giới thiệu mình là ai. 
 - Không cần nêu quy trình phân tích, không giới thiệu 30 năm kinh nghiệm.
 - Nếu xác định được bản án hay án lệ không phù hợp hãy bỏ quan, không đề cập đến trong câu trả lời.
 - Phân tích phải kết hợp chặt chẽ giữa lý thuyết pháp lý và thực tiễn vụ án (nếu có), đảm bảo tính chi tiết và thực tiễn.  
@@ -282,6 +283,152 @@ Bạn là chuyên gia tư vấn pháp luật với hơn 30 năm kinh nghiệm tr
     })
 
 
+@app.route("/draft_judgment", methods=["POST"])
+def draft_judgment():
+    data = request.get_json(silent=True) or {}
+    case_details = data.get("case_details", "").strip()
+    if not case_details:
+        return jsonify({"error": "Thông tin vụ án không hợp lệ!"}), 400
+
+    try:
+        # Query relevant judgments and precedents
+        banan_results = query_faiss_index(
+            case_details, embeddings, faiss_index, metadata_dict, k=5, doc_type="banan", max_threshold=0.8
+        )
+        anle_results = query_faiss_index(
+            case_details, embeddings, faiss_anle_index, anle_metadata_dict, k=5, doc_type="anle", max_threshold=0.8
+        )
+
+        # Prepare data for prompt
+        top_banan_docs = [
+            {
+                "source": result["metadata"]["source"],
+                "case_summary": result["case_summary"],
+                "legal_issues": result["legal_issues"],
+                "court_reasoning": result["court_reasoning"],
+                "decision": result["decision"],
+                "relevant_laws": result["relevant_laws"]
+            }
+            for result in banan_results
+        ]
+        top_anle_docs = [
+            {
+                "source": result["metadata"]["source"],
+                "case_summary": result["case_summary"],
+                "legal_issues": result["legal_issues"],
+                "court_reasoning": result["court_reasoning"],
+                "decision": result["decision"],
+                "relevant_laws": result["relevant_laws"]
+            }
+            for result in anle_results
+        ]
+
+        # Prompt for drafting judgment
+        prompt = f"""
+Soạn thảo bản án cho một vụ án tại Việt Nam dựa trên thông tin vụ án và các tài liệu tham khảo sau. Bản án phải tuân thủ cấu trúc pháp lý chính thức, sử dụng ngôn ngữ pháp lý chính xác, chặt chẽ, và phù hợp với quy định pháp luật Việt Nam.
+
+**Thông tin vụ án:**  
+{case_details}
+
+**Hướng dẫn soạn thảo bản án ngắn gọn, đầy đủ ý, có tính chất pháp lý rõ ràng, có thể là dàn ý cho bản án: **
+
+1. **Phần mở đầu:**  
+   - Nêu rõ tên tòa án, số bản án, ngày tháng năm xét xử.  
+   - Ghi thông tin các bên (nguyên đơn, bị đơn, người có quyền lợi và nghĩa vụ liên quan).  
+   - Tóm tắt nội dung vụ án và yêu cầu khởi kiện.
+   - Phải có đủ court header.
+
+2. **Xét thấy (Phân tích sự kiện và căn cứ pháp lý):**  
+   - Tóm tắt các sự kiện chính của vụ án dựa trên thông tin vụ án.  
+   - Phân tích các vấn đề pháp lý trọng tâm, viện dẫn cụ thể các điều luật từ Bộ luật Dân sự, Luật Thương mại, hoặc các văn bản pháp luật liên quan.  
+   - Nếu có bản án hoặc án lệ tương đồng, tham chiếu lập luận của tòa án, so sánh điểm tương đồng và khác biệt với vụ án hiện tại.  
+   - Nếu không có bản án hoặc án lệ, phân tích dựa trên các nguyên tắc pháp lý và quy định pháp luật hiện hành.
+
+3. **Nhận định của tòa án:**  
+   - Đưa ra nhận định về trách nhiệm pháp lý, nghĩa vụ của các bên.  
+   - Giải thích lý do chấp nhận hoặc bác bỏ các yêu cầu khởi kiện.  
+   - Đảm bảo lập luận chặt chẽ, logic, và phù hợp với thực tiễn pháp lý Việt Nam.
+
+4. **Quyết định (Phần tuyên án):**  
+   - Nêu rõ quyết định của tòa án, bao gồm chấp nhận/bác bỏ yêu cầu khởi kiện, nghĩa vụ bồi thường (nếu có), và phân chia án phí.  
+   - Viện dẫn điều luật cụ thể làm cơ sở cho quyết định.  
+
+5. **Kết thúc:**  
+   - Nêu quyền kháng cáo và thời hạn kháng cáo theo quy định pháp luật Việt Nam.
+
+**Lưu ý quan trọng:**  
+- Sử dụng ngôn ngữ pháp lý chính xác, trang trọng, và tuân thủ cấu trúc bản án theo quy định pháp luật Việt Nam.  
+- Nếu bản án hoặc án lệ không phù hợp, không đề cập đến mà tập trung vào phân tích pháp lý dựa trên quy định pháp luật.  
+- Đảm bảo bản án có tính thực tiễn, có thể áp dụng trực tiếp vào vụ án cụ thể.  
+- Không sử dụng từ giả sử, ví dụ; không chào hỏi hoặc giới thiệu.  
+- Nếu thông tin vụ án thiếu chi tiết, dựa vào các nguyên tắc pháp lý chung và quy định pháp luật hiện hành để soạn thảo.
+
+**Định dạng đầu ra:**  
+- Trả về bản án dưới dạng văn bản thuần túy, có cấu trúc rõ ràng, phân chia các phần (Mở đầu, Xét thấy, Nhận định, Quyết định, Kết thúc).
+- Có định dạng html5, bắt buộc dùng css có sẵn sau, không tự ý thêm cái khác:
+<style>
+        body {{
+            font-family: "Jost", sans-serif;
+        }}
+        #center-align {{
+            text-align: center;
+        }}
+        #bold-upper {{
+            font-weight: bold;
+            text-transform: uppercase;
+        }}
+        .section-title {{
+             font-weight: bold;
+             text-transform: uppercase;
+             text-align: center;  
+             margin-top: 20px;
+             margin-bottom: 10px;
+        }}
+         .decision-section {{
+              font-weight: bold;
+              text-align: center;
+              margin-top: 20px;
+              margin-bottom: 10px;
+         }}
+         table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+         }}
+         td, th {{
+            padding: 5px;
+            vertical-align: top;
+         }}
+         .party-info td:first-child {{
+            width: 150px; / Adjust width as needed /
+             font-weight: bold;
+         }}
+    </style>
+để tiện cho việc hiển thị lên web.
+"""
+
+        # Call Gemini to generate the judgment
+        handler = GeminiHandler(
+            config_path="config.yaml",
+            content_strategy=Strategy.ROUND_ROBIN,
+            key_strategy=KeyRotationStrategy.SMART_COOLDOWN
+        )
+        gen = handler.generate_content(
+            prompt=prompt,
+            model_name="gemini-2.0-flash-thinking-exp-01-21",
+            return_stats=False
+        )
+        judgment = gen.get("text", "Không có phản hồi từ mô hình.")
+    except Exception as e:
+        logger.exception("Error drafting judgment")
+        return jsonify({"error": "Lỗi khi soạn thảo bản án: " + str(e)}), 500
+
+    return jsonify({
+        "judgment": judgment,
+        "top_banan_documents": top_banan_docs,
+        "top_anle_documents": top_anle_docs
+    })
+    
 @app.route("/")
 def home():
     current_time = datetime.now().strftime("%I:%M:%S %p")
