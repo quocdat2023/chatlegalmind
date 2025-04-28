@@ -12,13 +12,13 @@ gemini:
     temperature: 0.5
     top_p: 1.0
     top_k: 40
-    max_output_tokens: 16384
+    max_output_tokens: 8192
     stop_sequences: []
     response_mime_type: "text/plain"
 
   # Optional: Rate Limiting
   rate_limits:
-    requests_per_minute: 120
+    requests_per_minute: 60
     reset_window: 60  # seconds
 
   # Optional: Strategies
@@ -28,8 +28,8 @@ gemini:
 
   # Optional: Retry Settings
   retry:
-    max_attempts: 5
-    delay: 30  # seconds
+    max_attempts: 3
+    delay: 15  # seconds
 
   # Optional: Model Settings
   default_model: "gemini-2.0-flash-exp"

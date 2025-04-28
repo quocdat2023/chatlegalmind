@@ -293,10 +293,10 @@ def draft_judgment():
     try:
         # Query relevant judgments and precedents
         banan_results = query_faiss_index(
-            case_details, embeddings, faiss_index, metadata_dict, k=5, doc_type="banan", max_threshold=0.8
+            case_details, embeddings, faiss_index, metadata_dict, k=2, doc_type="banan", max_threshold=0.8
         )
         anle_results = query_faiss_index(
-            case_details, embeddings, faiss_anle_index, anle_metadata_dict, k=5, doc_type="anle", max_threshold=0.8
+            case_details, embeddings, faiss_anle_index, anle_metadata_dict, k=2, doc_type="anle", max_threshold=0.8
         )
 
         # Prepare data for prompt
@@ -330,7 +330,7 @@ Soạn thảo bản án cho một vụ án tại Việt Nam dựa trên thông t
 **Thông tin vụ án:**  
 {case_details}
 
-**Hướng dẫn soạn thảo bản án ngắn gọn, đầy đủ ý, có tính chất pháp lý rõ ràng, có thể là dàn ý cho bản án: **
+**Hướng dẫn soạn thảo bản án ngắn gọn nhất, đầy đủ ý, có tính chất pháp lý rõ ràng, là dàn ý gợi ý cho soạn thảo bản án, có đầy đủ chữ ký các bên liên quan. Lưu ý đây chỉ là hỗ trợ soạn thảo, nên không cần quá chi tiết: **
 
 1. **Phần mở đầu:**  
    - Nêu rõ tên tòa án, số bản án, ngày tháng năm xét xử.  
@@ -357,11 +357,97 @@ Soạn thảo bản án cho một vụ án tại Việt Nam dựa trên thông t
    - Nêu quyền kháng cáo và thời hạn kháng cáo theo quy định pháp luật Việt Nam.
 
 **Lưu ý quan trọng:**  
+- Bắt buộc phải trả về đầy đủ, hoàn chỉnh cấu trúc một bản án, không được thiếu, chỉ ở mức gợi ý, tạo dàn ý cho người soạn thảo bản án, không cần chi tiết cụ thể, đầy đủ chữ ký các bên có liên quan.
+- Phải có quốc hiệu nằm bên phải, tòa án, bản án nằm bên trái.
 - Sử dụng ngôn ngữ pháp lý chính xác, trang trọng, và tuân thủ cấu trúc bản án theo quy định pháp luật Việt Nam.  
 - Nếu bản án hoặc án lệ không phù hợp, không đề cập đến mà tập trung vào phân tích pháp lý dựa trên quy định pháp luật.  
 - Đảm bảo bản án có tính thực tiễn, có thể áp dụng trực tiếp vào vụ án cụ thể.  
 - Không sử dụng từ giả sử, ví dụ; không chào hỏi hoặc giới thiệu.  
 - Nếu thông tin vụ án thiếu chi tiết, dựa vào các nguyên tắc pháp lý chung và quy định pháp luật hiện hành để soạn thảo.
+- Nên tham khảo cách soạn thảo bản án của https://thuvienphapluat.vn/
+
+
+Mẫu bản án đúng chuẩn tại Việt Nam phải tuân theo các quy định của pháp luật tố tụng hình sự và các văn bản hướng dẫn của Tòa án nhân dân tối cao. Hiện nay, mẫu bản án hình sự sơ thẩm được quy định tại Mẫu số 27-HS ban hành kèm theo Nghị quyết số 05/2017/NQ-HĐTP ngày 19 tháng 9 năm 2017 của Hội đồng Thẩm phán Tòa án nhân dân tối cao. 1    
+1.
+toaandaklak.gov.vn
+toaandaklak.gov.vn
+
+Dưới đây là cấu trúc chung của một bản án hình sự sơ thẩm đúng chuẩn, bạn có thể tham khảo:
+
+TÒA ÁN NHÂN DÂN CẤP TỈNH/THÀNH PHỐ HOẶC CẤP HUYỆN/QUẬN
+
+BẢN ÁN HÌNH SỰ SƠ THẨM
+
+Số: .../..../HSST
+
+Ngày ... tháng ... năm ...
+
+TẠI PHIÊN TÒA CÔNG KHAI xét xử sơ thẩm vụ án hình sự thụ lý số: .../..../TLST-HS ngày ... tháng ... năm ... theo Quyết định đưa vụ án ra xét xử số: .../..../QĐXX-ST ngày ... tháng ... năm ... đối với bị cáo:
+
+Họ và tên bị cáo: (Ghi đầy đủ họ tên, ngày, tháng, năm sinh, nơi sinh, quốc tịch, dân tộc, tôn giáo, nghề nghiệp, nơi cư trú, trình độ văn hóa, tiền án, tiền sự - nếu có)
+
+Hội đồng xét xử gồm:
+
+Thẩm phán - Chủ tọa phiên tòa: (Họ và tên Thẩm phán)
+Các Thẩm phán: (Họ và tên các Thẩm phán khác)
+Hội thẩm nhân dân: (Họ và tên các Hội thẩm nhân dân)
+Thư ký phiên tòa: (Họ và tên Thư ký phiên tòa)
+
+Đại diện Viện kiểm sát nhân dân: (Họ và tên Kiểm sát viên)
+
+Người bào chữa cho bị cáo: (Nếu có, ghi rõ họ tên Luật sư, Văn phòng Luật sư/Công ty Luật)
+
+Bị hại: (Ghi đầy đủ họ tên, ngày, tháng, năm sinh, nơi cư trú - nếu có)
+
+Nguyên đơn dân sự: (Ghi đầy đủ họ tên, ngày, tháng, năm sinh, nơi cư trú - nếu có)
+
+Bị đơn dân sự: (Ghi đầy đủ họ tên, địa chỉ - nếu có)
+
+Người có quyền lợi, nghĩa vụ liên quan: (Ghi đầy đủ họ tên, địa chỉ - nếu có)
+
+NỘI DUNG VỤ ÁN:
+
+(Trình bày tóm tắt hành vi phạm tội của bị cáo theo Cáo trạng của Viện kiểm sát, lời khai của bị cáo tại phiên tòa, lời khai của bị hại, người làm chứng, kết quả giám định và các chứng cứ khác đã được thẩm tra tại phiên tòa.)
+
+NHẬN ĐỊNH CỦA HỘI ĐỒNG XÉT XỬ:
+
+(Phân tích, đánh giá các chứng cứ đã thu thập được, xác định tính chất, mức độ nguy hiểm cho xã hội của hành vi phạm tội, nhân thân của bị cáo, các tình tiết tăng nặng, giảm nhẹ trách nhiệm hình sự, xác định tội danh và điều khoản của Bộ luật Hình sự mà bị cáo phạm phải. Đánh giá về trách nhiệm dân sự và xử lý vật chứng (nếu có).)
+
+QUYẾT ĐỊNH:
+
+1. Về tội danh và hình phạt:
+
+Tuyên bố bị cáo ... (họ và tên) phạm tội ... (tên tội danh) quy định tại khoản ... Điều ... của Bộ luật Hình sự.
+Xử phạt bị cáo ... (họ và tên) ... (mức hình phạt chính, ví dụ: ... năm tù). Thời hạn chấp hành hình phạt tù tính từ ngày ... (ghi rõ ngày bắt tạm giam hoặc ngày bị cáo đến chấp hành án).
+(Nếu có hình phạt bổ sung thì ghi rõ, ví dụ: Phạt tiền bị cáo ... đồng; Cấm bị cáo đảm nhiệm chức vụ ... trong thời hạn ... năm sau khi chấp hành xong hình phạt tù.)
+2. Về trách nhiệm dân sự:
+
+Buộc bị cáo ... (họ và tên) phải bồi thường cho ... (người được bồi thường) số tiền ... đồng.
+(Các quyết định khác về trách nhiệm dân sự - nếu có.)
+3. Về xử lý vật chứng:
+
+(Nêu rõ quyết định xử lý đối với từng vật chứng của vụ án, ví dụ: Tịch thu sung quỹ nhà nước ...; Trả lại cho bị hại ...; Tiêu hủy ...)
+4. Về án phí:
+
+Bị cáo ... (họ và tên) phải chịu ... đồng án phí hình sự sơ thẩm.
+(Quyết định về án phí dân sự sơ thẩm - nếu có.)
+5. Về quyền kháng cáo:
+
+Bị cáo, bị hại, nguyên đơn dân sự, bị đơn dân sự, người có quyền lợi, nghĩa vụ liên quan có quyền kháng cáo bản án này trong thời hạn 15 ngày kể từ ngày tuyên án.
+Bản án được tuyên tại phiên tòa vào hồi ... giờ ... phút ngày ... tháng ... năm ...
+
+TM. HỘI ĐỒNG XÉT XỬ
+
+THẨM PHÁN - CHỦ TỌA PHIÊN TÒA
+
+(Ký tên và đóng dấu)
+
+Lưu ý quan trọng:
+
+Đây chỉ là cấu trúc chung, nội dung chi tiết của từng phần sẽ thay đổi tùy thuộc vào từng vụ án cụ thể.
+Các thông tin cần được điền đầy đủ, chính xác và phù hợp với diễn biến, chứng cứ của vụ án.
+Việc viện dẫn điều luật phải chính xác theo quy định hiện hành của Bộ luật Hình sự và Bộ luật Tố tụng hình sự.
+Bản án phải được viết rõ ràng, mạch lạc, có tính thuyết phục và đảm bảo tính pháp lý.
 
 **Định dạng đầu ra:**  
 - Trả về bản án dưới dạng văn bản thuần túy, có cấu trúc rõ ràng, phân chia các phần (Mở đầu, Xét thấy, Nhận định, Quyết định, Kết thúc).

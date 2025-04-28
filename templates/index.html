@@ -35,7 +35,6 @@
 		type="text/css" />
 	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 	<style>
-	
 		.bg-primary {
 			background-color: #2E8B57 !important;
 			;
@@ -526,7 +525,8 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0"  style="text-align: left">Hành chính</p>
+													<p class="text-truncate chat-username mb-0"
+														style="text-align: left">Hành chính</p>
 													<p class="text-truncate text-muted fs-13 mb-0">Về quyết định hành
 														chính là đối tượng khởi kiện vụ án hành chính
 													</p>
@@ -543,7 +543,8 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0"  style="text-align: left">Dân sự</p>
+													<p class="text-truncate chat-username mb-0"
+														style="text-align: left">Dân sự</p>
 													<p class="text-truncate text-muted fs-13 mb-0">Về xác định di sản
 														thừa kế là quyền sử dụng đất trong trường hợp di chúc không thể
 														hiện diện tích đất cụ thể
@@ -559,7 +560,8 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0"  style="text-align: left">Kinh doanh, thương mại
+													<p class="text-truncate chat-username mb-0"
+														style="text-align: left">Kinh doanh, thương mại
 													</p>
 													<p class="text-truncate text-muted fs-13 mb-0">Về hiệu lực của hợp
 														đồng thế chấp trong trường hợp tài sản thế chấp là nhà đất do
@@ -578,7 +580,8 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0"  style="text-align: left">Hình sự </p>
+													<p class="text-truncate chat-username mb-0"
+														style="text-align: left">Hình sự </p>
 													<p class="text-truncate text-muted fs-13 mb-0">Về hành vi gian dối
 														nhằm tiếp cận tài sản trong tội “Cướp giật tài sản”
 													</p>
@@ -593,7 +596,8 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0"  style="text-align: left">Dân sự</p>
+													<p class="text-truncate chat-username mb-0"
+														style="text-align: left">Dân sự</p>
 													<p class="text-truncate text-muted fs-13 mb-0">Về định khung hình
 														phạt và tình tiết định khung tăng nặng “có tổ chức” trong tội
 														“Bắt cóc nhằm chiếm đoạt tài sản”
@@ -608,7 +612,8 @@
 														class="rounded-circle avatar-xs" alt=""><span
 														class="user-status"></span> </div>
 												<div class="overflow-hidden me-2">
-													<p class="text-truncate chat-username mb-0"  style="text-align: left">Hôn nhân và gia đình</p>
+													<p class="text-truncate chat-username mb-0"
+														style="text-align: left">Hôn nhân và gia đình</p>
 													<p class="text-truncate text-muted fs-13 mb-0">Quyết định giám đốc
 														thẩm số 04/2021/HNGĐ-GĐT ngày 07/7/2021 của Hội đồng Thẩm phán
 														Toà án nhân dân tối cao về việc dân sự “Yêu cầu hủy việc kết hôn
@@ -4347,7 +4352,6 @@ ${contentHtml}
 					body: JSON.stringify({ case_details: message }),
 				});
 
-
 				// Check if response is JSON
 				const contentType = response.headers.get('content-type');
 				if (!contentType || !contentType.includes('application/json')) {
@@ -4363,7 +4367,6 @@ ${contentHtml}
 						...(Array.isArray(data.top_banan_documents) ? data.top_banan_documents : []),
 						...(Array.isArray(data.top_anle_documents) ? data.top_anle_documents : []),
 					];
-
 
 					// Generate documents HTML
 					const documentsHtml = documents.map(doc => `
@@ -4390,7 +4393,11 @@ ${contentHtml}
                 </div>
             `).join('');
 
-					// Create chat HTML
+					// Sanitize and format the API response
+					const apiResponse = data.judgment;
+					const cleanHtml = sanitizeAndFormatJudgment(apiResponse);
+
+					// Create chat HTML with cleanHtml in data-html attribute
 					const responseHtml = `
                 <li class="chat-list left" id="${responseId}">
                     <div class="conversation-list">
@@ -4403,6 +4410,11 @@ ${contentHtml}
                                     <p class="mb proportionally-spaced-text ctext-content" id="response-text-${responseId}"></p>
                                 </div>
                             </div>
+                            <div class="align-self-start d-flex"> 
+								<button type="button" class="btn btn-link text-decoration-none btn-lg waves-effect viewchitiet" id="viewchitiet" data-html="${encodeHtml(cleanHtml)}">
+													<i class="fa fa-book align-middle"></i>
+								</button>                          
+                            </div>
                             <div class="conversation-name">
                                 <small class="text-muted time">${new Date().toLocaleTimeString()}</small>
                                 <span class="text-success check-message-icon">
@@ -4413,16 +4425,17 @@ ${contentHtml}
                     </div>
                 </li>`;
 
+					// Append response to conversation
 					conversation.insertAdjacentHTML('beforeend', responseHtml);
-					$('.chat-input-typing').hide(); // Ẩn chỉ báo đang nhập
-					$('.send_message').prop('disabled', false); // Kích hoạt lại nút gửi
+					$('.chat-input-typing').hide(); // Hide typing indicator
+					$('.send_message').prop('disabled', false); // Enable send button
 					scrollToBottom(conversation);
-					const apiResponse = data.judgment; // bản án server trả về
-					const cleanHtml = sanitizeAndFormatJudgment(apiResponse);
 
-					typeResponse(cleanHtml, `response-text-${responseId}`);
-
-
+					// Type the response
+					typeResponse(cleanHtml, `response-text-${responseId}`, () => {
+						// Show documents after typing
+						$(`#response-text-document-${responseId}`).fadeIn(400);
+					});
 				} else {
 					showError(`Lỗi: ${data.error || 'Không thể xử lý yêu cầu'}`);
 				}
@@ -4431,6 +4444,140 @@ ${contentHtml}
 				showError(`Lỗi kết nối: ${error.message}`);
 			}
 		}
+
+		// Event listener for viewchitiet button
+		$(document).on('click', '.viewchitiet', function () {
+			const cleanHtml = $(this).attr('data-html'); // Get cleanHtml from data attribute
+			if (!cleanHtml) {
+				alert('Không có nội dung để hiển thị.');
+				return;
+			}
+
+			// Open a new window
+			const newWindow = window.open('', '_blank');
+			if (newWindow) {
+				// Write the HTML content to the new window
+				newWindow.document.write(wrapFullHtmlV2(cleanHtml));
+				newWindow.document.close(); // Close the document to ensure rendering
+			} else {
+				alert('Không thể mở cửa sổ mới. Vui lòng kiểm tra cài đặt trình duyệt.');
+			}
+		});
+
+		// Updated wrapFullHtml function with justified text alignment
+		function wrapFullHtmlV2(contentHtml) {
+			return `
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bản án</title>
+    <style>
+        /* General styles for screen display */
+        body {
+            font-family: 'Times New Roman', Times, serif !important;
+            margin: 20px !important;
+            line-height: 1.6 !important;
+            text-align: justify !important;
+            color: #000 !important;
+        }
+        .judgment-body {
+            max-width: 800px !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+        }
+        h1, h2, h3 {
+            color: #2E8B57 !important;
+            margin-bottom: 15px !important;
+        }
+        h1 {
+            font-size: 24px !important;
+            text-align: center !important;
+        }
+        h2 {
+            font-size: 20px !important;
+        }
+        h3 {
+            font-size: 18px !important;
+        }
+        p {
+            font-size: 16px !important;
+            margin-bottom: 10px !important;
+        }
+        ul, ol {
+            font-size: 16px !important;
+            margin-left: 20px !important;
+            margin-bottom: 10px !important;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            @page {
+                size: A4 !important;
+                margin: 15mm !important; /* Standard margins for A4 printing */
+            }
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 12pt !important; /* Standard for printed documents */
+                line-height: 1.5 !important;
+                text-align: justify !important;
+                color: #000 !important;
+            }
+            .judgment-body {
+                max-width: 180mm !important; /* A4 width (210mm) minus margins */
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            h1 {
+                font-size: 16pt !important;
+                text-align: center !important;
+                margin-bottom: 12mm !important;
+            }
+            h2 {
+                font-size: 14pt !important;
+                margin-bottom: 8mm !important;
+            }
+            h3 {
+                font-size: 12pt !important;
+                margin-bottom: 6mm !important;
+            }
+            p {
+                font-size: 12pt !important;
+                margin-bottom: 6mm !important;
+            }
+            ul, ol {
+                font-size: 12pt !important;
+                margin-left: 10mm !important;
+                margin-bottom: 6mm !important;
+            }
+            /* Hide non-essential elements during printing */
+            .no-print {
+                display: none !important;
+            }
+            /* Ensure content doesn't overflow */
+            * {
+                overflow: visible !important !important;
+            }
+            /* Avoid page breaks inside paragraphs or lists */
+            p, ul, ol, h1, h2, h3 {
+                page-break-inside: avoid !important;
+            }
+            /* Add page break before major sections if needed */
+            h1, h2 {
+                page-break-before: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="judgment-body">
+        ${contentHtml}
+    </div>
+</body>
+</html>
+    `.trim() ;
+}
 
 		// Helper function to show errors
 		function showError(message) {
