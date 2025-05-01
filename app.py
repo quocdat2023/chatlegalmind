@@ -325,12 +325,12 @@ def draft_judgment():
 
         # Prompt for drafting judgment
         prompt = f"""
-Soạn thảo bản án cho một vụ án tại Việt Nam dựa trên thông tin vụ án và các tài liệu tham khảo sau. Bản án phải tuân thủ cấu trúc pháp lý chính thức, sử dụng ngôn ngữ pháp lý chính xác, chặt chẽ, và phù hợp với quy định pháp luật Việt Nam.
+Soạn thảo bản án cho một vụ án tại Việt Nam dựa trên thông tin vụ án và các tài liệu tham khảo sau. Bản án phải tuân thủ cấu trúc pháp lý chính thức, sử dụng ngôn ngữ pháp lý chính xác, chặt chẽ, và phù hợp với quy định pháp luật Việt Nam, bám sát hể thức, kỹ thuật trình bày các mẫu bản án sơ thẩm, phúc thẩm, quyết định giám đốc thẩm về hành chính, dân sự, hôn nhân và gia đình, kinh doanh, thương mại, lao động ban hành kèm theo Nghị quyết số 01/2017/NQ-HĐTP, Nghị quyết số 02/2017/NQ-HĐTP (08 mẫu được gửi kèm theo Công văn này) để các Tòa án áp dụng khi ban hành các văn bản tố tụng này.
 
 **Thông tin vụ án:**  
 {case_details}
 
-**Hướng dẫn soạn thảo bản án ngắn gọn nhất, đầy đủ ý, có tính chất pháp lý rõ ràng, là dàn ý gợi ý cho soạn thảo bản án, có đầy đủ chữ ký các bên liên quan. Lưu ý đây chỉ là hỗ trợ soạn thảo, nên không cần quá chi tiết: **
+**Hướng dẫn soạn thảo bản án ngắn gọn nhất, đầy đủ ý, có tính chất pháp lý rõ ràng, là dàn ý gợi ý cho soạn thảo bản án, có đầy đủ chữ ký các bên liên quan. Lưu ý đây chỉ là hỗ trợ soạn thảo, nên không cần quá chi tiết. Có hai loại bản án là bản án sơ thẩm và bản án phúc thẩm, căn cứ vào tình huống mà soạn cho phù hợp.**
 
 1. **Phần mở đầu:**  
    - Nêu rõ tên tòa án, số bản án, ngày tháng năm xét xử.  
@@ -369,7 +369,6 @@ Soạn thảo bản án cho một vụ án tại Việt Nam dựa trên thông t
 
 Mẫu bản án đúng chuẩn tại Việt Nam phải tuân theo các quy định của pháp luật tố tụng hình sự và các văn bản hướng dẫn của Tòa án nhân dân tối cao. Hiện nay, mẫu bản án hình sự sơ thẩm được quy định tại Mẫu số 27-HS ban hành kèm theo Nghị quyết số 05/2017/NQ-HĐTP ngày 19 tháng 9 năm 2017 của Hội đồng Thẩm phán Tòa án nhân dân tối cao. 1    
 1.
-toaandaklak.gov.vn
 toaandaklak.gov.vn
 
 Dưới đây là cấu trúc chung của một bản án hình sự sơ thẩm đúng chuẩn, bạn có thể tham khảo:

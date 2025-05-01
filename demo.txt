@@ -71,3 +71,59 @@ Thời hiệu cần được lưu ý: Yêu cầu khởi kiện, đặc biệt l�
 Giao dịch bảo đảm thường được công nhận hiệu lực nếu hợp pháp về hình thức: Ngay cả khi có vấn đề tiềm ẩn về quyền sở hữu tài sản, nếu hợp đồng thế chấp được công chứng, đăng ký đúng quy định, Tòa án thường công nhận hiệu lực để bảo vệ bên nhận thế chấp ngay tình, nhưng đồng thời cân nhắc quyền lợi của bên thứ ba liên quan.
 Để giải quyết một tranh chấp cụ thể, cần xem xét kỹ lưỡng các tình tiết, chứng cứ của vụ việc và đối chiếu với các quy định pháp luật hiện hành cũng như tinh thần của các bản án, án lệ liên quan.
 Nếu bạn có một tình huống cụ thể cần tư vấn, vui lòng cung cấp thêm thông tin chi tiết để tôi có thể đưa ra phân tích và giải pháp pháp lý chính xác hơn.
+
+
+
+
+
+1. **Phần mở đầu bản án**:  
+   - Quốc hiệu, tiêu ngữ  
+   - Tên bản án, số hiệu bản án, ngày tháng năm xét xử  
+   - Tên Tòa án, cấp xét xử  
+   - Thành phần Hội đồng xét xử  
+   - Thư ký phiên tòa  
+   - Các đương sự tham gia phiên tòa (nguyên đơn, bị đơn, người có quyền lợi, nghĩa vụ liên quan, luật sư, đại diện Viện kiểm sát nếu có)
+
+2. **Nội dung vụ án**:  
+   - Tóm tắt yêu cầu, lập luận của nguyên đơn  
+   - Tóm tắt ý kiến phản hồi của bị đơn  
+   - Ý kiến người có quyền lợi và nghĩa vụ liên quan (nếu có)
+
+3. **Nhận định của Tòa án**:  
+   - Phân tích và đánh giá chứng cứ  
+   - Căn cứ pháp lý áp dụng  
+   - Lập luận về trách nhiệm pháp lý của các bên  
+   - Xác định đúng/sai, hợp lý/hợp lệ các yêu cầu của các bên
+
+4. **Quyết định của Tòa án**:  
+   - Chấp nhận hoặc bác bỏ từng yêu cầu cụ thể của các bên  
+   - Quyết định cụ thể về quyền và nghĩa vụ pháp lý của từng bên (ví dụ: thanh toán bồi thường, phân chia tài sản, quyền sử dụng đất, v.v.)  
+   - Quy định về án phí và các chi phí tố tụng khác  
+   - Hướng dẫn về quyền và thời hạn kháng cáo
+
+5. **Phần kết thúc bản án**:  
+   - Chữ ký, đóng dấu của Thẩm phán (Chủ tọa phiên tòa) và thư ký phiên tòa.
+
+**Thông tin chi tiết về vụ án:**  
+[Điền thông tin cụ thể của vụ án vào đây, ví dụ: nội dung tranh chấp, các yêu cầu khởi kiện, quan điểm và lập luận các bên, tài liệu chứng cứ đã thu thập, v.v.]
+
+Yêu cầu:  
+- Sử dụng ngôn ngữ pháp lý chính xác, trang trọng, rõ ràng.  
+- Tuân thủ chặt chẽ quy định pháp luật Việt Nam hiện hành.
+
+Lưu ý đặc biệt quan trọng:
+
+Đây chỉ là cấu trúc chung, nội dung chi tiết của từng phần sẽ thay đổi tùy thuộc vào từng vụ án cụ thể.
+Các thông tin cần được điền đầy đủ, chính xác và phù hợp với diễn biến, chứng cứ của vụ án.
+Việc viện dẫn điều luật phải chính xác theo quy định hiện hành của Bộ luật Hình sự và Bộ luật Tố tụng hình sự.
+Bản án phải được viết rõ ràng, mạch lạc, có tính thuyết phục và đảm bảo tính pháp lý.
+
+**Lưu ý quan trọng:**  
+- Bắt buộc phải trả về đầy đủ, hoàn chỉnh cấu trúc một bản án, không được thiếu, chỉ ở mức gợi ý, tạo dàn ý cho người soạn thảo bản án, không cần chi tiết cụ thể, đầy đủ chữ ký các bên có liên quan.
+- Bắt buộc phải có quốc hiệu nằm bên phải, tòa án, bản án nằm bên trái.
+- Sử dụng ngôn ngữ pháp lý chính xác, trang trọng, và tuân thủ cấu trúc bản án theo quy định pháp luật Việt Nam.  
+- Nếu bản án hoặc án lệ không phù hợp, không đề cập đến mà tập trung vào phân tích pháp lý dựa trên quy định pháp luật.  
+- Đảm bảo bản án có tính thực tiễn, có thể áp dụng trực tiếp vào vụ án cụ thể.  
+- Không sử dụng từ giả sử, ví dụ; không chào hỏi hoặc giới thiệu.  
+- Nếu thông tin vụ án thiếu chi tiết, dựa vào các nguyên tắc pháp lý chung và quy định pháp luật hiện hành để soạn thảo.
+- Nên tham khảo cách soạn thảo bản án của https://thuvienphapluat.vn/

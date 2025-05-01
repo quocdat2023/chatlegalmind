@@ -4284,7 +4284,7 @@ ${contentHtml}
 				showError('Vui lòng nhập thông tin vụ án!');
 				return;
 			}
-			if (message.length > 5000) {
+			if (message.length > 20000) {
 				showError('Thông tin vụ án quá dài! Vui lòng rút ngắn dưới 5000 ký tự.');
 				return;
 			}
@@ -4467,117 +4467,74 @@ ${contentHtml}
 		// Updated wrapFullHtml function with justified text alignment
 		function wrapFullHtmlV2(contentHtml) {
 			return `
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>Bản án</title>
-    <style>
-        /* General styles for screen display */
-        body {
-            font-family: 'Times New Roman', Times, serif !important;
-            margin: 20px !important;
-            line-height: 1.6 !important;
-            text-align: justify !important;
-            color: #000 !important;
-        }
-        .judgment-body {
-            max-width: 800px !important;
-            margin: 0 auto !important;
-            padding: 20px !important;
-        }
-        h1, h2, h3 {
-            color: #2E8B57 !important;
-            margin-bottom: 15px !important;
-        }
-        h1 {
-            font-size: 24px !important;
-            text-align: center !important;
-        }
-        h2 {
-            font-size: 20px !important;
-        }
-        h3 {
-            font-size: 18px !important;
-        }
-        p {
-            font-size: 16px !important;
-            margin-bottom: 10px !important;
-        }
-        ul, ol {
-            font-size: 16px !important;
-            margin-left: 20px !important;
-            margin-bottom: 10px !important;
-        }
+	<!DOCTYPE html>
+	<html lang="vi">
+	<head>
+		<meta charset="UTF-8">
+		<title>Bản án</title>
+		<style>
+			/* General styles for screen display */
+			body {
+				font-family: 'Times New Roman', Times, serif !important;
+				margin: 20px !important;
+				line-height: 1.6 !important;
+				text-align: justify !important;
+				color: #000 !important;
+			}
+			.judgment-body {
+				max-width: 800px !important;
+				margin: 0 auto !important;
+				padding: 20px !important;
+			}
+			h1, h2, h3 {
+				color: black !important;
+				margin-bottom: 15px !important;
+			}
+			h1 {
+				font-size: 24px !important;
+				text-align: center !important;
+			}
+			h2 {
+				font-size: 20px !important;
+			}
+			h3 {
+				font-size: 18px !important;
+			}
+			p {
+				font-size: 16px !important;
+				margin-bottom: 10px !important;
+			}
+			ul, ol {
+				font-size: 16px !important;
+				margin-left: 20px !important;
+				margin-bottom: 10px !important;
+			}
 
-        /* Print-specific styles */
-        @media print {
-            @page {
-                size: A4 !important;
-                margin: 15mm !important; /* Standard margins for A4 printing */
-            }
-            body {
-                margin: 0 !important;
-                padding: 0 !important;
-                font-size: 12pt !important; /* Standard for printed documents */
-                line-height: 1.5 !important;
-                text-align: justify !important;
-                color: #000 !important;
-            }
-            .judgment-body {
-                max-width: 180mm !important; /* A4 width (210mm) minus margins */
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            h1 {
-                font-size: 16pt !important;
-                text-align: center !important;
-                margin-bottom: 12mm !important;
-            }
-            h2 {
-                font-size: 14pt !important;
-                margin-bottom: 8mm !important;
-            }
-            h3 {
-                font-size: 12pt !important;
-                margin-bottom: 6mm !important;
-            }
-            p {
-                font-size: 12pt !important;
-                margin-bottom: 6mm !important;
-            }
-            ul, ol {
-                font-size: 12pt !important;
-                margin-left: 10mm !important;
-                margin-bottom: 6mm !important;
-            }
-            /* Hide non-essential elements during printing */
-            .no-print {
-                display: none !important;
-            }
-            /* Ensure content doesn't overflow */
-            * {
-                overflow: visible !important !important;
-            }
-            /* Avoid page breaks inside paragraphs or lists */
-            p, ul, ol, h1, h2, h3 {
-                page-break-inside: avoid !important;
-            }
-            /* Add page break before major sections if needed */
-            h1, h2 {
-                page-break-before: auto !important;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="judgment-body">
-        ${contentHtml}
-    </div>
-</body>
-</html>
-    `.trim() ;
-}
+			/* Print-specific styles */
+			@media print {
+				@page {
+					size: A4 !important;
+					margin: 15mm !important; /* Standard margins for A4 printing */
+				}
+				body {
+					margin: 0 !important;
+					padding: 0 !important;
+					font-size: 12pt !important; /* Standard for printed documents */
+					line-height: 1.5 !important;
+					text-align: justify !important;
+					color: #000 !important;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="judgment-body">
+			${contentHtml}
+		</div>
+	</body>
+	</html>
+		`.trim() ;
+	}
 
 		// Helper function to show errors
 		function showError(message) {
@@ -4602,15 +4559,23 @@ ${contentHtml}
 		}
 
 		function encodeHtml(str) {
-			if (typeof str !== 'string') return '';
-			return str
-				.replace(/&/g, "&amp;")
-				.replace(/</g, "&lt;")
-				.replace(/>/g, "&gt;")
-				.replace(/"/g, "&quot;")
-				.replace(/'/g, "&#039;")
-				.replace(/html/g, "");
+			// Return empty string for non-string inputs or null/undefined
+			if (str == null || typeof str !== 'string') {
+				return '';
+			}
 
+			// Map of characters to their HTML entities
+			const htmlEntities = {
+				'&': '&amp;',
+				'<': '&lt;',
+				'>': '&gt;',
+				'"': '&quot;',
+				'html': '',
+				"'": '&#39;'
+			};
+
+			// Replace special characters with their HTML entities
+			return str.replace(/[&<>"']/g, char => htmlEntities[char]);
 		}
 
 		// Optimized typing function for plain text, or render HTML instantly

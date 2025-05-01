@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bản án</title>
+    <style>
+        /* General styles for screen display */
+        body {
+            font-family: 'Times New Roman', Times, serif !important;
+            margin: 20px !important;
+            line-height: 1.6 !important;
+            text-align: justify !important;
+            color: #000 !important;
+        }
+        .judgment-body {
+            max-width: 800px !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+        }
+        h1, h2, h3 {
+            color: black !important;
+            margin-bottom: 15px !important;
+        }
+        h1 {
+            font-size: 24px !important;
+            text-align: center !important;
+        }
+        h2 {
+            font-size: 20px !important;
+        }
+        h3 {
+            font-size: 18px !important;
+        }
+        p {
+            font-size: 16px !important;
+            margin-bottom: 10px !important;
+        }
+        ul, ol {
+            font-size: 16px !important;
+            margin-left: 20px !important;
+            margin-bottom: 10px !important;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            @page {
+                size: A4 !important;
+                margin: 15mm !important; /* Standard margins for A4 printing */
+            }
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 12pt !important; /* Standard for printed documents */
+                line-height: 1.5 !important;
+                text-align: justify !important;
+                color: #000 !important;
+            }
+            .judgment-body {
+                max-width: 180mm !important; /* A4 width (210mm) minus margins */
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            h1 {
+                font-size: 16pt !important;
+                text-align: center !important;
+                margin-bottom: 12mm !important;
+            }
+            h2 {
+                font-size: 14pt !important;
+                margin-bottom: 8mm !important;
+            }
+            h3 {
+                font-size: 12pt !important;
+                margin-bottom: 6mm !important;
+            }
+            p {
+                font-size: 12pt !important;
+                margin-bottom: 6mm !important;
+            }
+            ul, ol {
+                font-size: 12pt !important;
+                margin-left: 10mm !important;
+                margin-bottom: 6mm !important;
+            }
+            /* Hide non-essential elements during printing */
+            .no-print {
+                display: none !important;
+            }
+            /* Ensure content doesn't overflow */
+            * {
+                overflow: visible !important;
+            }
+            /* Avoid page breaks inside paragraphs or lists */
+            p, ul, ol, h1, h2, h3 {
+                page-break-inside: avoid !important;
+            }
+            /* Add page break before major sections if needed */
+            h1, h2 {
+                page-break-before: auto !important;
+            }
+        }
+    </style>
+    <script>
+        // JavaScript to load content dynamically
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const content = urlParams.get('content');
+            if (content) {
+                document.getElementById('judgment-content').innerHTML = decodeURIComponent(content);
+            } else {
+                document.getElementById('judgment-content').innerHTML = '<p>Không có nội dung để hiển thị.</p>';
+            }
+        };
+    </script>
+</head>
+<body>
+    <div class="judgment-body">
+        <div id="judgment-content"></div>
+    </div>
+</body>
+</html>
