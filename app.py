@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import faiss
@@ -9,7 +10,17 @@ from dotenv import load_dotenv
 from gemini_handler import GeminiHandler, GenerationConfig, Strategy, KeyRotationStrategy
 from sentence_transformers import SentenceTransformer
 import logging
-
+from rank_bm25 import BM25Okapi  # Import BM25
+from nltk.tokenize import word_tokenize
+import nltk
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab')
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -42,17 +53,14 @@ try:
     with open(metadata_path, "rb") as f:
         metadata_dict = pickle.load(f)
     logger.info(f"Metadata loaded with {len(metadata_dict['ids'])} documents.")
-    # Validate and enrich metadata
     for i, meta in enumerate(metadata_dict["metadata"]):
         if "type" not in meta:
             meta["type"] = "banan"
-        # Ensure required fields
         meta["case_summary"] = meta.get("case_summary", "No summary available")
         meta["legal_issues"] = meta.get("legal_issues", "No legal issues specified")
         meta["court_reasoning"] = meta.get("court_reasoning", "No reasoning provided")
         meta["decision"] = meta.get("decision", "No decision available")
         meta["relevant_laws"] = meta.get("relevant_laws", "No laws cited")
-        # Warn if text is empty
         if not metadata_dict["texts"][i]:
             logger.warning(f"Empty text field for document ID {metadata_dict['ids'][i]}")
 except Exception as e:
@@ -108,13 +116,96 @@ except Exception as e:
     logger.error(f"Error loading án lệ metadata: {e}")
     raise
 
+# Initialize BM25 indices
+def tokenize_text(text):
+    """Tokenize text using NLTK."""
+    return word_tokenize(text.lower())
+
+# Create BM25 indices for each dataset
+try:
+    tokenized_banan_texts = [tokenize_text(text) for text in metadata_dict["texts"]]
+    bm25_banan = BM25Okapi(tokenized_banan_texts)
+    logger.info("BM25 index initialized for bản án.")
+
+    tokenized_banan_sum_texts = [tokenize_text(text) for text in metadata_path_sum_dict["texts"]]
+    bm25_banan_sum = BM25Okapi(tokenized_banan_sum_texts)
+    logger.info("BM25 index initialized for bản án tóm tắt.")
+
+    tokenized_anle_texts = [tokenize_text(text) for text in anle_metadata_dict["texts"]]
+    bm25_anle = BM25Okapi(tokenized_anle_texts)
+    logger.info("BM25 index initialized for án lệ.")
+except Exception as e:
+    logger.error(f"Error initializing BM25 indices: {e}")
+    raise
+
+def query_bm25_index(query: str, bm25: BM25Okapi, metadata: dict, k: int = 5, doc_type: str = None, score_threshold: float = 0.0):
+    """Query BM25 index and return top-k similar documents."""
+    tokenized_query = tokenize_text(query)
+    scores = bm25.get_scores(tokenized_query)
+    top_k_indices = np.argsort(scores)[::-1][:k]
+    results = []
+
+    for idx in top_k_indices:
+        if scores[idx] >= score_threshold and 0 <= idx < len(metadata["ids"]):
+            result = {
+                "id": metadata["ids"][idx],
+                "metadata": metadata["metadata"][idx],
+                "text": metadata["texts"][idx],
+                "score": float(scores[idx]),
+                "case_summary": metadata["metadata"][idx].get("case_summary", "No summary"),
+                "legal_issues": metadata["metadata"][idx].get("legal_issues", "No issues"),
+                "court_reasoning": metadata["metadata"][idx].get("court_reasoning", "No reasoning"),
+                "decision": metadata["metadata"][idx].get("decision", "No decision"),
+                "relevant_laws": metadata["metadata"][idx].get("relevant_laws", "No laws")
+            }
+            if doc_type is None or result["metadata"].get("type") == doc_type:
+                results.append(result)
+
+    logger.info(f"Query BM25 ({doc_type}): {len(results)} results found for query '{query}' with threshold {score_threshold:.4f}")
+    logger.debug(f"BM25 scores: {[float(scores[i]) for i in top_k_indices]}")
+    return results[:k]
+
+def query_hybrid_index(query: str, embeddings: SentenceTransformer, faiss_idx: faiss.Index, bm25: BM25Okapi, metadata: dict, k: int = 5, doc_type: str = None, faiss_weight: float = 0.5, bm25_weight: float = 0.5):
+    """Combine FAISS and BM25 results using weighted scoring."""
+    # FAISS search
+    faiss_results = query_faiss_index(query, embeddings, faiss_idx, metadata, k=k, doc_type=doc_type, max_threshold=0.8)
+    # BM25 search
+    bm25_results = query_bm25_index(query, bm25, metadata, k=k, doc_type=doc_type, score_threshold=0.8)
+
+    # Normalize scores
+    faiss_scores = {res["id"]: 1.0 - res["distance"] for res in faiss_results}  # Convert distance to similarity
+    bm25_scores = {res["id"]: res["score"] for res in bm25_results}
+    
+    # Combine results
+    combined_results = {}
+    all_ids = set(faiss_scores.keys()).union(bm25_scores.keys())
+    
+    max_bm25_score = max(bm25_scores.values(), default=1.0) or 1.0
+    for id in all_ids:
+        faiss_score = faiss_scores.get(id, 0.0)
+        bm25_score = bm25_scores.get(id, 0.0) / max_bm25_score  # Normalize BM25 score
+        combined_score = faiss_weight * faiss_score + bm25_weight * bm25_score
+        combined_results[id] = combined_score
+
+    # Sort by combined score
+    sorted_ids = sorted(combined_results, key=combined_results.get, reverse=True)[:k]
+    results = []
+    for id in sorted_ids:
+        # Find the result from FAISS or BM25
+        for res in faiss_results + bm25_results:
+            if res["id"] == id:
+                results.append(res)
+                break
+    
+    logger.info(f"Hybrid search ({doc_type}): {len(results)} results after combining FAISS and BM25")
+    return results
+
 def query_faiss_index(query: str, embeddings: SentenceTransformer, idx: faiss.Index, metadata: dict, k: int = 5, doc_type: str = None, max_threshold: float = 0.8):
-    """Query FAISS index and return top-k similar documents, filtered by type and dynamic distance threshold."""
+    """Query FAISS index and return top-k similar documents (unchanged)."""
     query_emb = embeddings.encode([query], convert_to_numpy=True)
     distances, indices = idx.search(query_emb, k)
     results = []
 
-    # Calculate dynamic threshold based on 50th percentile
     if len(distances[0]) > 0:
         distance_threshold = min(max_threshold, np.percentile(distances[0], 50))
     else:
@@ -125,7 +216,7 @@ def query_faiss_index(query: str, embeddings: SentenceTransformer, idx: faiss.In
             result = {
                 "id": metadata["ids"][i],
                 "metadata": metadata["metadata"][i],
-                "text": metadata["texts"][i],  # Return full text
+                "text": metadata["texts"][i],
                 "distance": float(dist),
                 "case_summary": metadata["metadata"][i].get("case_summary", "No summary"),
                 "legal_issues": metadata["metadata"][i].get("legal_issues", "No issues"),
@@ -148,27 +239,27 @@ def query():
         return jsonify({"error": "Câu hỏi không hợp lệ!"}), 400
 
     try:
-        # Query judgments and precedents
-        banan_results = query_faiss_index(
-            question, embeddings, faiss_index, metadata_dict, k=5, doc_type="banan", max_threshold=0.8
+        # Query judgments and precedents using hybrid search
+        banan_results = query_hybrid_index(
+            question, embeddings, faiss_index, bm25_banan, metadata_dict, k=5, doc_type="banan", faiss_weight=0.5, bm25_weight=0.5
         )
-        banan_sum_results = query_faiss_index(
-            question, embeddings, faiss_index, metadata_path_sum_dict, k=5, doc_type="banan", max_threshold=0.8
+        banan_sum_results = query_hybrid_index(
+            question, embeddings, faiss_index, bm25_banan_sum, metadata_path_sum_dict, k=5, doc_type="banan", faiss_weight=0.5, bm25_weight=0.5
         )
-        anle_results = query_faiss_index(
-            question, embeddings, faiss_anle_index, anle_metadata_dict, k=5, doc_type="anle", max_threshold=0.8
+        anle_results = query_hybrid_index(
+            question, embeddings, faiss_anle_index, bm25_anle, anle_metadata_dict, k=5, doc_type="anle", faiss_weight=0.5, bm25_weight=0.5
         )
 
     except Exception as e:
-        logger.exception("Error querying FAISS")
-        return jsonify({"error": "Lỗi khi truy vấn FAISS: " + str(e)}), 500
+        logger.exception("Error querying hybrid index")
+        return jsonify({"error": "Lỗi khi truy vấn hybrid index: " + str(e)}), 500
 
     # Prepare judgment and precedent data
     top_banan_docs = [
         {
             "source": result["metadata"]["source"],
             "text": result["text"],
-            "distance": result["distance"],
+            "distance": result.get("distance", 0.0),
             "case_summary": result["case_summary"],
             "legal_issues": result["legal_issues"],
             "court_reasoning": result["court_reasoning"],
@@ -181,7 +272,7 @@ def query():
         {
             "source": result["metadata"]["source"],
             "text": result["text"],
-            "distance": result["distance"],
+            "distance": result.get("distance", 0.0),
             "case_summary": result["case_summary"],
             "legal_issues": result["legal_issues"],
             "court_reasoning": result["court_reasoning"],
@@ -194,7 +285,7 @@ def query():
         {
             "source": result["metadata"]["source"],
             "text": result["text"],
-            "distance": result["distance"],
+            "distance": result.get("distance", 0.0),
             "case_summary": result["case_summary"],
             "legal_issues": result["legal_issues"],
             "court_reasoning": result["court_reasoning"],
@@ -209,7 +300,7 @@ def query():
     logger.debug(f"Top bản án tóm tắt: {top_banan_sum}")
     logger.debug(f"Top án lệ: {top_anle_docs}")
 
-    # Prompt
+    # Prompt (unchanged)
     prompt = f"""
 Bạn là chuyên gia tư vấn pháp luật với hơn 30 năm kinh nghiệm trong mọi lĩnh vực pháp lý tại Việt Nam. Bạn sẽ phân tích vấn đề pháp lý theo các bước chi tiết dưới đây để cung cấp câu trả lời chặt chẽ, rõ ràng, và thuyết phục, đảm bảo đề cập đến cả bản án và án lệ khi có sẵn.
 
@@ -325,171 +416,149 @@ def draft_judgment():
 
         # Prompt for drafting judgment
         prompt = f"""
-Soạn thảo bản án cho một vụ án tại Việt Nam dựa trên thông tin vụ án và các tài liệu tham khảo sau. Bản án phải tuân thủ cấu trúc pháp lý chính thức, sử dụng ngôn ngữ pháp lý chính xác, chặt chẽ, và phù hợp với quy định pháp luật Việt Nam, bám sát hể thức, kỹ thuật trình bày các mẫu bản án sơ thẩm, phúc thẩm, quyết định giám đốc thẩm về hành chính, dân sự, hôn nhân và gia đình, kinh doanh, thương mại, lao động ban hành kèm theo Nghị quyết số 01/2017/NQ-HĐTP, Nghị quyết số 02/2017/NQ-HĐTP (08 mẫu được gửi kèm theo Công văn này) để các Tòa án áp dụng khi ban hành các văn bản tố tụng này.
+Bạn là trợ lý pháp lý thông minh, có nhiệm vụ **hỗ trợ soạn thảo bản án hành chính sơ thẩm** theo đúng **Mẫu số 22-HC**, ban hành kèm theo **Nghị quyết số 02/2017/NQ-HĐTP ngày 13/01/2017** của Hội đồng Thẩm phán TAND Tối cao.
 
-**Thông tin vụ án:**  
+Hãy giúp tôi **soạn bản án đầy đủ**, trình bày rõ ràng, theo đúng định dạng mẫu, với các phần cụ thể như sau:
+
+Dưới đây là **thông tin vụ án** để bạn dựa vào đó và soạn bản án:
+
 {case_details}
 
-**Hướng dẫn soạn thảo bản án ngắn gọn nhất, đầy đủ ý, có tính chất pháp lý rõ ràng, là dàn ý gợi ý cho soạn thảo bản án, có đầy đủ chữ ký các bên liên quan. Lưu ý đây chỉ là hỗ trợ soạn thảo, nên không cần quá chi tiết. Có hai loại bản án là bản án sơ thẩm và bản án phúc thẩm, căn cứ vào tình huống mà soạn cho phù hợp.**
+- Tên Tòa án.... (1) nằm trên header bên trái và in đậm, in hoa toàn bộ.
+- Số bản án và năm ban hành (2) nằm trên header bên trái  và in đậm.
+- Ngày tuyên án (3) nằm trên header bên trái và in đậm.
+- V/v... (4) nằm trên header bên trái và in đậm.
+- Quốc hiệu "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM" in đậm, nằm trên header bên phải ngang hàng với (1)(2)(3)(4) và căn giữa.
+- Tiêu ngữ "Độc lập - Tự do - Hạnh phúc" được in đậm, không in hoa toàn bộ, chỉ in hoa chữ cái đầu mỗi từ,  nằm trên header về phía bên phải ngang hàng với (1)(2)(3)(4) và căn giữa.
+- Bắt buộc có dòng chữ "NHÂN DANH" chứ không phải "NHÂN DÂN" nằm giữa, in đậm, viết in hoa toàn bộ.
+- Bắt buộc có dòng chữ "NƯỚC CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM" nằm giữa, in đậm, viết in hoa toàn bộ.
+- Bắt buộc có dòng chữ "TÒA ÁN NHÂN DÂN ...." nằm giữa, in đậm, viết in hoa toàn bộ.
 
-1. **Phần mở đầu:**  
-   - Nêu rõ tên tòa án, số bản án, ngày tháng năm xét xử.  
-   - Ghi thông tin các bên (nguyên đơn, bị đơn, người có quyền lợi và nghĩa vụ liên quan).  
-   - Tóm tắt nội dung vụ án và yêu cầu khởi kiện.
-   - Phải có đủ court header.
+### -Thành phần Hội đồng xét xử sơ thẩm gồm có: ** phần này được in đậm**(6)
+Thẩm phán - Chủ toạ phiên tòa: Ông (Bà)... 
+Thẩm phán: Ông (Bà)...
+Các Hội thẩm nhân dân:
+1. Ông (Bà)... 
+2. Ông (Bà)... 
+3. Ông (Bà)...
+###- Thư ký phiên tòa: Ông (Bà)...  ** phần này được in đậm**(7)
+###- Đại diện Viện kiểm sát nhân dân (8).....tham gia phiên tòa: ** phần này được in đậm**  
+Ông (Bà)... Kiểm sát viên.
 
-2. **Xét thấy (Phân tích sự kiện và căn cứ pháp lý):**  
-   - Tóm tắt các sự kiện chính của vụ án dựa trên thông tin vụ án.  
-   - Phân tích các vấn đề pháp lý trọng tâm, viện dẫn cụ thể các điều luật từ Bộ luật Dân sự, Luật Thương mại, hoặc các văn bản pháp luật liên quan.  
-   - Nếu có bản án hoặc án lệ tương đồng, tham chiếu lập luận của tòa án, so sánh điểm tương đồng và khác biệt với vụ án hiện tại.  
-   - Nếu không có bản án hoặc án lệ, phân tích dựa trên các nguyên tắc pháp lý và quy định pháp luật hiện hành.
+---
+Trong các ngày........ tháng........ năm........(9) tại........................................... xét xử sơ thẩm
+công khai(10) vụ án thụ lý số.........../...........(11)/TLST-HC ngày........ tháng........ năm........ về........................................(12) theo Quyết định đưa vụ án ra xét xử số ...../....../QĐXXST-HC ngày........
+tháng........ năm........ giữa các đương sự: `Phần này lùi vào đầu dòng`
+1. Người khởi kiện:(13)`Phần này lùi vào đầu dòng`
+...`Phần này lùi vào đầu dòng`
+Người đại diện hợp pháp của người khởi kiện:(14)`Phần này lùi vào đầu dòng`
+...`Phần này lùi vào đầu dòng`
+Người bảo vệ quyền và lợi ích hợp pháp của người khởi kiện:(15)`Phần này lùi vào đầu dòng`
+...`Phần này lùi vào đầu dòng`
+2. Người bị kiện: (16)`Phần này lùi vào đầu dòng`
+... `Phần này lùi vào đầu dòng`
+Người đại diện hợp pháp của người bị kiện:(17)`Phần này lùi vào đầu dòng`
+... `Phần này lùi vào đầu dòng`
+Người bảo vệ quyền và lợi ích hợp pháp của người bị kiện:(18)`Phần này lùi vào đầu dòng`
+... `Phần này lùi vào đầu dòng`
+3. Người có quyền lợi, nghĩa vụ liên quan:(19)`Phần này lùi vào đầu dòng`
+... `Phần này lùi vào đầu dòng`
+Người đại diện hợp pháp của người có quyền lợi, nghĩa vụ liên quan:(20)`Phần này lùi vào đầu dòng`
+... `Phần này lùi vào đầu dòng`
+Người bảo vệ quyền và lợi ích hợp pháp của người có quyền lợi, nghĩa vụ liên`Phần này lùi vào đầu dòng`
+quan:(21)`Phần này lùi vào đầu dòng`
+...`Phần này lùi vào đầu dòng`
+4. Người làm chứng: (22)`Phần này lùi vào đầu dòng`
+...`Phần này lùi vào đầu dòng`
+5. Người giám định:(23)`Phần này lùi vào đầu dòng`
+...`Phần này lùi vào đầu dòng`
+6. Người phiên dịch:(24)`Phần này lùi vào đầu dòng`
+... `Phần này lùi vào đầu dòng`
 
-3. **Nhận định của tòa án:**  
-   - Đưa ra nhận định về trách nhiệm pháp lý, nghĩa vụ của các bên.  
-   - Giải thích lý do chấp nhận hoặc bác bỏ các yêu cầu khởi kiện.  
-   - Đảm bảo lập luận chặt chẽ, logic, và phù hợp với thực tiễn pháp lý Việt Nam.
+***NỘI DUNG VỤ ÁN (25) phần này in đậm, căn giữa***
+...
+...
 
-4. **Quyết định (Phần tuyên án):**  
-   - Nêu rõ quyết định của tòa án, bao gồm chấp nhận/bác bỏ yêu cầu khởi kiện, nghĩa vụ bồi thường (nếu có), và phân chia án phí.  
-   - Viện dẫn điều luật cụ thể làm cơ sở cho quyết định.  
+***NHẬN ĐỊNH CỦA TÒA ÁN: (26) phần này in đậm, căn giữa***
+[1]...
+[2]...
 
-5. **Kết thúc:**  
-   - Nêu quyền kháng cáo và thời hạn kháng cáo theo quy định pháp luật Việt Nam.
+Vì các lẽ trên,
 
-**Lưu ý quan trọng:**  
-- Bắt buộc phải trả về đầy đủ, hoàn chỉnh cấu trúc một bản án, không được thiếu, chỉ ở mức gợi ý, tạo dàn ý cho người soạn thảo bản án, không cần chi tiết cụ thể, đầy đủ chữ ký các bên có liên quan.
-- Phải có quốc hiệu nằm bên phải, tòa án, bản án nằm bên trái.
-- Sử dụng ngôn ngữ pháp lý chính xác, trang trọng, và tuân thủ cấu trúc bản án theo quy định pháp luật Việt Nam.  
-- Nếu bản án hoặc án lệ không phù hợp, không đề cập đến mà tập trung vào phân tích pháp lý dựa trên quy định pháp luật.  
-- Đảm bảo bản án có tính thực tiễn, có thể áp dụng trực tiếp vào vụ án cụ thể.  
-- Không sử dụng từ giả sử, ví dụ; không chào hỏi hoặc giới thiệu.  
-- Nếu thông tin vụ án thiếu chi tiết, dựa vào các nguyên tắc pháp lý chung và quy định pháp luật hiện hành để soạn thảo.
-- Nên tham khảo cách soạn thảo bản án của https://thuvienphapluat.vn/
+***QUYẾT ĐỊNH: phần này in đậm, căn giữa***
+Căn cứ vào.... (27)
+.... (28).....
+................
+............(29)
+
+***Nơi nhận: phần này in đậm căn lề trái**
+(Ghi những nơi mà Tòa án cấp sơ thẩm phải giao hoặc gửi bản án theo quy định tại Điều 196 của Luật TTHC) phần này căn lề trái.
 
 
-Mẫu bản án đúng chuẩn tại Việt Nam phải tuân theo các quy định của pháp luật tố tụng hình sự và các văn bản hướng dẫn của Tòa án nhân dân tối cao. Hiện nay, mẫu bản án hình sự sơ thẩm được quy định tại Mẫu số 27-HS ban hành kèm theo Nghị quyết số 05/2017/NQ-HĐTP ngày 19 tháng 9 năm 2017 của Hội đồng Thẩm phán Tòa án nhân dân tối cao. 1    
-1.
-toaandaklak.gov.vn
+***TM. HỘI ĐỒNG XÉT XỬ SƠ THẨM nội dung phần này in đậm, nằm ở bên phải, không liên quan đến các class hoặc id trước**
+THẨM PHÁN - CHỦ TỌA PHIÊN TÒA nội dung phần này in đậm , nằm ở bên phải, không liên quan đến các class hoặc id trước**
+(Ký tên, ghi rõ họ tên, đóng dấu) nội dung phần này in nghiên, nằm ở bên phải, nội dung căn giữa, không liên quan đến các class hoặc id trước
 
-Dưới đây là cấu trúc chung của một bản án hình sự sơ thẩm đúng chuẩn, bạn có thể tham khảo:
 
-TÒA ÁN NHÂN DÂN CẤP TỈNH/THÀNH PHỐ HOẶC CẤP HUYỆN/QUẬN
 
-BẢN ÁN HÌNH SỰ SƠ THẨM
-
-Số: .../..../HSST
-
-Ngày ... tháng ... năm ...
-
-TẠI PHIÊN TÒA CÔNG KHAI xét xử sơ thẩm vụ án hình sự thụ lý số: .../..../TLST-HS ngày ... tháng ... năm ... theo Quyết định đưa vụ án ra xét xử số: .../..../QĐXX-ST ngày ... tháng ... năm ... đối với bị cáo:
-
-Họ và tên bị cáo: (Ghi đầy đủ họ tên, ngày, tháng, năm sinh, nơi sinh, quốc tịch, dân tộc, tôn giáo, nghề nghiệp, nơi cư trú, trình độ văn hóa, tiền án, tiền sự - nếu có)
-
-Hội đồng xét xử gồm:
-
-Thẩm phán - Chủ tọa phiên tòa: (Họ và tên Thẩm phán)
-Các Thẩm phán: (Họ và tên các Thẩm phán khác)
-Hội thẩm nhân dân: (Họ và tên các Hội thẩm nhân dân)
-Thư ký phiên tòa: (Họ và tên Thư ký phiên tòa)
-
-Đại diện Viện kiểm sát nhân dân: (Họ và tên Kiểm sát viên)
-
-Người bào chữa cho bị cáo: (Nếu có, ghi rõ họ tên Luật sư, Văn phòng Luật sư/Công ty Luật)
-
-Bị hại: (Ghi đầy đủ họ tên, ngày, tháng, năm sinh, nơi cư trú - nếu có)
-
-Nguyên đơn dân sự: (Ghi đầy đủ họ tên, ngày, tháng, năm sinh, nơi cư trú - nếu có)
-
-Bị đơn dân sự: (Ghi đầy đủ họ tên, địa chỉ - nếu có)
-
-Người có quyền lợi, nghĩa vụ liên quan: (Ghi đầy đủ họ tên, địa chỉ - nếu có)
-
-NỘI DUNG VỤ ÁN:
-
-(Trình bày tóm tắt hành vi phạm tội của bị cáo theo Cáo trạng của Viện kiểm sát, lời khai của bị cáo tại phiên tòa, lời khai của bị hại, người làm chứng, kết quả giám định và các chứng cứ khác đã được thẩm tra tại phiên tòa.)
-
-NHẬN ĐỊNH CỦA HỘI ĐỒNG XÉT XỬ:
-
-(Phân tích, đánh giá các chứng cứ đã thu thập được, xác định tính chất, mức độ nguy hiểm cho xã hội của hành vi phạm tội, nhân thân của bị cáo, các tình tiết tăng nặng, giảm nhẹ trách nhiệm hình sự, xác định tội danh và điều khoản của Bộ luật Hình sự mà bị cáo phạm phải. Đánh giá về trách nhiệm dân sự và xử lý vật chứng (nếu có).)
-
-QUYẾT ĐỊNH:
-
-1. Về tội danh và hình phạt:
-
-Tuyên bố bị cáo ... (họ và tên) phạm tội ... (tên tội danh) quy định tại khoản ... Điều ... của Bộ luật Hình sự.
-Xử phạt bị cáo ... (họ và tên) ... (mức hình phạt chính, ví dụ: ... năm tù). Thời hạn chấp hành hình phạt tù tính từ ngày ... (ghi rõ ngày bắt tạm giam hoặc ngày bị cáo đến chấp hành án).
-(Nếu có hình phạt bổ sung thì ghi rõ, ví dụ: Phạt tiền bị cáo ... đồng; Cấm bị cáo đảm nhiệm chức vụ ... trong thời hạn ... năm sau khi chấp hành xong hình phạt tù.)
-2. Về trách nhiệm dân sự:
-
-Buộc bị cáo ... (họ và tên) phải bồi thường cho ... (người được bồi thường) số tiền ... đồng.
-(Các quyết định khác về trách nhiệm dân sự - nếu có.)
-3. Về xử lý vật chứng:
-
-(Nêu rõ quyết định xử lý đối với từng vật chứng của vụ án, ví dụ: Tịch thu sung quỹ nhà nước ...; Trả lại cho bị hại ...; Tiêu hủy ...)
-4. Về án phí:
-
-Bị cáo ... (họ và tên) phải chịu ... đồng án phí hình sự sơ thẩm.
-(Quyết định về án phí dân sự sơ thẩm - nếu có.)
-5. Về quyền kháng cáo:
-
-Bị cáo, bị hại, nguyên đơn dân sự, bị đơn dân sự, người có quyền lợi, nghĩa vụ liên quan có quyền kháng cáo bản án này trong thời hạn 15 ngày kể từ ngày tuyên án.
-Bản án được tuyên tại phiên tòa vào hồi ... giờ ... phút ngày ... tháng ... năm ...
-
-TM. HỘI ĐỒNG XÉT XỬ
-
-THẨM PHÁN - CHỦ TỌA PHIÊN TÒA
-
-(Ký tên và đóng dấu)
-
-Lưu ý quan trọng:
-
-Đây chỉ là cấu trúc chung, nội dung chi tiết của từng phần sẽ thay đổi tùy thuộc vào từng vụ án cụ thể.
-Các thông tin cần được điền đầy đủ, chính xác và phù hợp với diễn biến, chứng cứ của vụ án.
-Việc viện dẫn điều luật phải chính xác theo quy định hiện hành của Bộ luật Hình sự và Bộ luật Tố tụng hình sự.
-Bản án phải được viết rõ ràng, mạch lạc, có tính thuyết phục và đảm bảo tính pháp lý.
-
-**Định dạng đầu ra:**  
-- Trả về bản án dưới dạng văn bản thuần túy, có cấu trúc rõ ràng, phân chia các phần (Mở đầu, Xét thấy, Nhận định, Quyết định, Kết thúc).
-- Có định dạng html5, bắt buộc dùng css có sẵn sau, không tự ý thêm cái khác:
+**Yêu cầu:**  
+- Bỏ phần giới thiệu dài dòng khúc đầu của hệ thống, hãy tập trung vào phần soạn bản án.
+- Dùng thông tin tôi cung cấp để soạn thảo hoàn chỉnh bản án, bằng cách điền vào các chỗ trống, {case_details}.
+- Căn cứ, viện dẫn điều luật tại Việt Nam một cách chính xác, dựa trên thông tin tình huống vụ án mà tôi cung cấp để hoàn thành soạn thảo bản án.
+- Viết đúng định dạng bản án theo văn phong pháp lý, trang trọng, khách quan.  
+- Không viết gộp đoạn, hãy chia từng phần theo đúng nhãn tiêu đề như trong mẫu.
+- Định dạng kết quả trả về trong khổ giấy A4.
+- Bắt buộc trả về kết quả dùng html5, và định dạng css chuẩn mực, không cần css cho thẻ <body>, phù hợp với trang A4 để dễ dàng hiển thị và in ấn, không tự ý css ngoài những gì mà tôi cung cấp dưới đây. Cụ thể như sau: 
 <style>
-        body {{
-            font-family: "Jost", sans-serif;
+
+        .header {{
+            display: flex  !important;
+            justify-content: space-between  !important;
+            margin-bottom: 20px  !important;
         }}
-        #center-align {{
-            text-align: center;
+
+        .header-left {{
+            text-align: left  !important;
         }}
-        #bold-upper {{
-            font-weight: bold;
-            text-transform: uppercase;
+
+        .header-right {{
+            text-align: center  !important;
         }}
-        .section-title {{
-             font-weight: bold;
-             text-transform: uppercase;
-             text-align: center;  
-             margin-top: 20px;
-             margin-bottom: 10px;
+        .header p{{
+             margin: 0  !important;
+
         }}
-         .decision-section {{
-              font-weight: bold;
-              text-align: center;
-              margin-top: 20px;
-              margin-bottom: 10px;
-         }}
-         table {{
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-         }}
-         td, th {{
-            padding: 5px;
-            vertical-align: top;
-         }}
-         .party-info td:first-child {{
-            width: 150px; / Adjust width as needed /
-             font-weight: bold;
-         }}
+        .indented {{
+            margin-left: 20px  !important;
+        }}
+
+        .center-bold {{
+            font-weight: bold  !important;
+            text-align: center  !important;
+        }}
+
+        .italic {{
+            font-style: italic  !important;
+        }}
+         / Print-specific styles /
+			@media print {{
+				@page {{
+					size: A4  !important;
+					margin: 15mm  !important; / Standard margins for A4 printing /
+				}}
+				body {{
+					margin: 0  !important;
+					padding: 0  !important;
+					font-size: 12pt  !important; / Standard for printed documents /
+					line-height: 1.5  !important;
+					text-align: justify  !important;
+					color: #000  !important;
+				}}
+                .header{{
+                display: block  !important;
+                }}
+			}}
     </style>
-để tiện cho việc hiển thị lên web.
 """
 
         # Call Gemini to generate the judgment
@@ -521,3 +590,4 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+

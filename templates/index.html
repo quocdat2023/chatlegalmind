@@ -4473,59 +4473,63 @@ ${contentHtml}
 		<meta charset="UTF-8">
 		<title>Bản án</title>
 		<style>
-			/* General styles for screen display */
-			body {
-				font-family: 'Times New Roman', Times, serif !important;
-				margin: 20px !important;
-				line-height: 1.6 !important;
-				text-align: justify !important;
-				color: #000 !important;
-			}
-			.judgment-body {
-				max-width: 800px !important;
-				margin: 0 auto !important;
-				padding: 20px !important;
-			}
-			h1, h2, h3 {
-				color: black !important;
-				margin-bottom: 15px !important;
-			}
-			h1 {
-				font-size: 24px !important;
-				text-align: center !important;
-			}
-			h2 {
-				font-size: 20px !important;
-			}
-			h3 {
-				font-size: 18px !important;
-			}
-			p {
-				font-size: 16px !important;
-				margin-bottom: 10px !important;
-			}
-			ul, ol {
-				font-size: 16px !important;
-				margin-left: 20px !important;
-				margin-bottom: 10px !important;
-			}
+        body {
+            font-family: Times New Roman, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+			max-width: 800px !important;
+			margin: 0 auto !important;
+			padding: 20px !important;
+        }
 
-			/* Print-specific styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            text-align: left;
+        }
+
+        .header-right {
+            text-align: center;
+        }
+        .header p{
+             margin: 0;
+
+        }
+        .indented {
+            margin-left: 20px;
+        }
+
+        .center-bold {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+         / Print-specific styles /
 			@media print {
 				@page {
-					size: A4 !important;
-					margin: 15mm !important; /* Standard margins for A4 printing */
+					size: A4;
+					margin: 15mm; / Standard margins for A4 printing /
 				}
 				body {
-					margin: 0 !important;
-					padding: 0 !important;
-					font-size: 12pt !important; /* Standard for printed documents */
-					line-height: 1.5 !important;
-					text-align: justify !important;
-					color: #000 !important;
+					margin: 0;
+					padding: 0;
+					font-size: 12pt; / Standard for printed documents /
+					line-height: 1.5;
+					text-align: justify;
+					color: #000;
 				}
+                .header{
+                display: block;
+                }
 			}
-		</style>
+    </style>
 	</head>
 	<body>
 		<div class="judgment-body">
@@ -4533,8 +4537,8 @@ ${contentHtml}
 		</div>
 	</body>
 	</html>
-		`.trim() ;
-	}
+		`.trim();
+		}
 
 		// Helper function to show errors
 		function showError(message) {

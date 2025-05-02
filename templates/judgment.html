@@ -2,120 +2,152 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Bản án</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tòa Án Nhân Dân</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        /* General styles for screen display */
         body {
-            font-family: 'Times New Roman', Times, serif !important;
-            margin: 20px !important;
-            line-height: 1.6 !important;
-            text-align: justify !important;
-            color: #000 !important;
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
         }
-        .judgment-body {
-            max-width: 800px !important;
-            margin: 0 auto !important;
-            padding: 20px !important;
+        .header-text {
+            text-align: center;
+            font-weight: bold;
         }
-        h1, h2, h3 {
-            color: black !important;
-            margin-bottom: 15px !important;
+        .sub-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
-        h1 {
-            font-size: 24px !important;
-            text-align: center !important;
+        .content-section {
+            margin-top: 20px;
         }
-        h2 {
-            font-size: 20px !important;
+        .underline {
+            border-bottom: 1px solid #000;
+            display: inline-block;
+            width: 100%;
         }
-        h3 {
-            font-size: 18px !important;
+        .list-group-item {
+            border: none;
+            padding: 0.25rem 1.25rem;
         }
-        p {
-            font-size: 16px !important;
-            margin-bottom: 10px !important;
+        .section-title {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 30px;
         }
-        ul, ol {
-            font-size: 16px !important;
-            margin-left: 20px !important;
-            margin-bottom: 10px !important;
+        .decision {
+            margin-top: 20px;
+            text-align: justify;
         }
-
-        /* Print-specific styles */
-        @media print {
-            @page {
-                size: A4 !important;
-                margin: 15mm !important; /* Standard margins for A4 printing */
-            }
-            body {
-                margin: 0 !important;
-                padding: 0 !important;
-                font-size: 12pt !important; /* Standard for printed documents */
-                line-height: 1.5 !important;
-                text-align: justify !important;
-                color: #000 !important;
-            }
-            .judgment-body {
-                max-width: 180mm !important; /* A4 width (210mm) minus margins */
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            h1 {
-                font-size: 16pt !important;
-                text-align: center !important;
-                margin-bottom: 12mm !important;
-            }
-            h2 {
-                font-size: 14pt !important;
-                margin-bottom: 8mm !important;
-            }
-            h3 {
-                font-size: 12pt !important;
-                margin-bottom: 6mm !important;
-            }
-            p {
-                font-size: 12pt !important;
-                margin-bottom: 6mm !important;
-            }
-            ul, ol {
-                font-size: 12pt !important;
-                margin-left: 10mm !important;
-                margin-bottom: 6mm !important;
-            }
-            /* Hide non-essential elements during printing */
-            .no-print {
-                display: none !important;
-            }
-            /* Ensure content doesn't overflow */
-            * {
-                overflow: visible !important;
-            }
-            /* Avoid page breaks inside paragraphs or lists */
-            p, ul, ol, h1, h2, h3 {
-                page-break-inside: avoid !important;
-            }
-            /* Add page break before major sections if needed */
-            h1, h2 {
-                page-break-before: auto !important;
-            }
+        .guideline {
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+        .guideline h5 {
+            font-weight: bold;
         }
     </style>
-    <script>
-        // JavaScript to load content dynamically
-        window.onload = function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const content = urlParams.get('content');
-            if (content) {
-                document.getElementById('judgment-content').innerHTML = decodeURIComponent(content);
-            } else {
-                document.getElementById('judgment-content').innerHTML = '<p>Không có nội dung để hiển thị.</p>';
-            }
-        };
-    </script>
 </head>
 <body>
-    <div class="judgment-body">
-        <div id="judgment-content"></div>
+    <div class="container mt-4">
+        <div class="sub-header">
+            <div>
+                <p class="font-weight-bold">TÒA ÁN NHÂN DÂN _______<sup>(1)</sup><br>
+                    <p>Bản án số: _____/_____-HC-ST<sup>(2)</sup></p>
+                <p>Ngày: ____________<sup>(3)</sup></p>
+                <p>V/v khởi kiện ____________<sup>(4)</sup></p>
+                
+            </div>
+            <div>
+                CÔNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                <p>Độc lập - Tự do - Hạnh phúc</p>
+            </div>
+        </div>
+
+        <h3 class="header-text">NHÂN DANH<br>NƯỚC CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br>TÒA ÁN NHÂN DÂN _______<sup>(5)</sup></h3>
+
+        <div class="content-section">
+            <p>- Thành phần Hội đồng xét xử sơ thẩm gồm có:<sup>(6)</sup></p>
+            <p>Thẩm phán - Chủ tọa phiên tòa: Ông (Bà) ___________________________</p>
+            <p>Thẩm phán: Ông (Bà) ___________________________</p>
+            <p>Các Hội thẩm nhân dân:</p>
+            <ul class="list-group">
+                <li class="list-group-item">1. Ông (Bà) ___________________________</li>
+                <li class="list-group-item">2. Ông (Bà) ___________________________</li>
+                <li class="list-group-item">3. Ông (Bà) ___________________________</li>
+            </ul>
+            <p>- Thư ký phiên tòa: Ông (Bà) ___________________________<sup>(7)</sup></p>
+            <p>- Đại diện Viện kiểm sát nhân dân tham gia phiên tòa:<sup>(8)</sup></p>
+            <p>Ông (Bà) ___________________________ Kiểm sát viên: ___________________________</p>
+            <p>Trong các ngày ___ tháng ___ năm ____<sup>(9)</sup> tại _______ xét xử sơ thẩm công khai<sup>(10)</sup> vụ án thụ lý số _____/______/TLST-HC<sup>(11)</sup> theo Quyết định đưa vụ án ra xét xử số _____/______/QĐXXST-HC ngày ___ tháng ___ năm ____, giữa các đương sự:<sup>(12)</sup></p>
+
+            <p class="font-weight-bold mt-3">1. Người khởi kiện:<sup>(13)</sup></p>
+            <p class="underline">____________________________________________________</p>
+            <p>Người đại diện hợp pháp của người khởi kiện:<sup>(14)</sup></p>
+            <p class="underline">____________________________________________________</p>
+            <p>Người bảo vệ quyền và lợi ích hợp pháp của người khởi kiện:<sup>(15)</sup></p>
+            <p class="underline">____________________________________________________</p>
+
+            <p class="font-weight-bold mt-3">2. Người bị kiện:<sup>(16)</sup></p>
+            <p class="underline">____________________________________________________</p>
+            <p>Người đại diện hợp pháp của người bị kiện:<sup>(17)</sup></p>
+            <p class="underline">____________________________________________________</p>
+            <p>Người bảo vệ quyền và lợi ích hợp pháp của người bị kiện:<sup>(18)</sup></p>
+            <p class="underline">____________________________________________________</p>
+
+            <p class="font-weight-bold mt-3">3. Người có quyền lợi, nghĩa vụ liên quan:<sup>(19)</sup></p>
+            <p class="underline">____________________________________________________</p>
+            <p>Người đại diện hợp pháp của người có quyền lợi, nghĩa vụ liên quan:<sup>(20)</sup></p>
+            <p class="underline">____________________________________________________</p>
+            <p>Người bảo vệ quyền và lợi ích hợp pháp của người có quyền lợi, nghĩa vụ liên quan:<sup>(21)</sup></p>
+            <p class="underline">____________________________________________________</p>
+
+            <p class="font-weight-bold mt-3">4. Người làm chứng:<sup>(22)</sup></p>
+            <p class="underline">____________________________________________________</p>
+            <p class="font-weight-bold mt-3">5. Người giám định:<sup>(23)</sup></p>
+            <p class="underline">____________________________________________________</p>
+            <p class="font-weight-bold mt-3">6. Người phiên dịch:<sup>(24)</sup></p>
+            <p class="underline">____________________________________________________</p>
+
+            <h4 class="section-title">NỘI DUNG VỤ ÁN</h4>
+            <p class="mt-3">[1] ___________________________</p>
+            <p class="mt-3">[2] ___________________________</p>
+
+            <p class="mt-3">Vì các lẽ trên,</p>
+
+            <h4 class="section-title">QUYẾT ĐỊNH:</h4>
+            <p class="decision">Căn cứ vào ___________________________</p>
+            <p class="decision">[29] ___________________________</p>
+
+            <div class="text-right mt-4">
+                <p class="font-weight-bold">TÒA ÁN HỘI ĐỒNG XÉT XỬ SƠ THẨM<br>THẨM PHÁN - CHỦ TỌA</p>
+                <p>(Ký tên, ghi rõ họ tên, đóng dấu)</p>
+            </div>
+        </div>
+
+        <div class="guideline">
+            <h5>Hướng dẫn sử dụng mẫu số 22-HC:</h5>
+            <p>(1) Ghi tên Tòa án ra bản án. Nếu là Tòa án nhân dân huyện, quận, thị xã, thành phố thuộc tỉnh, thì ghi rõ thuộc trung ương nào (ví dụ: Tòa án nhân dân huyện Từ Liêm, thành phố Hà Nội); nếu là Tòa án nhân dân tỉnh, thành phố trực thuộc trung ương thì ghi Tòa án nhân dân tỉnh (thành phố) nào (ví dụ: Tòa án nhân dân tỉnh Thanh Hóa).</p>
+            <p>(2) Ô thứ nhất ghi số bản án, ô thứ hai ghi năm ra bản án (ví dụ: Số: 98/2017/HC-ST).</p>
+            <p>(3) Ghi ngày, tháng, năm tuyên án không phân biệt vụ án được xét xử sơ thẩm và kết thúc trong một ngày hay được xét xử sơ thẩm trong nhiều ngày.</p>
+            <p>(4) Ghi trích yếu vụ án (ví dụ: về khởi kiện quyết định thu hồi đất).</p>
+            <p>(5) Ghi như hướng dẫn tại điểm (1).</p>
+            <p>(6) Nếu Hội đồng xét xử sơ thẩm gồm ba người, thì chỉ ghi họ tên của Thẩm phán - Chủ tọa phiên tòa, bỏ thông tin xét xử sơ thẩm gồm năm người, thì ghi họ tên của Thẩm phán - Chủ tọa phiên tòa, họ tên của Thẩm phán, họ tên của cả ba Hội thẩm nhân dân. Cần chú ý là không ghi chức vụ của Thẩm phán; chức vụ, nghề nghiệp của Hội thẩm nhân dân.</p>
+            <p>(7) Ghi họ tên của Thư ký phiên tòa và ghi rõ là Thư ký Tòa án hoặc Thẩm tra viên của Tòa án nào như hướng dẫn tại điểm (1).</p>
+            <p>(8) Ghi tương tự hướng dẫn tại điểm (1) nhưng thay các chữ "Tòa án nhân dân" bằng "Viện kiểm sát nhân dân".</p>
+            <p>(9) Trường hợp vụ án được xét xử và kết thúc trong một ngày thì bỏ hai chữ "Trong các" (ví dụ: Ngày 17 tháng 8 năm 2017 tại...). Trường hợp vụ án được xét xử trong hai ngày trở lên, nếu số ngày là 02 ngày thì có thể ghi đủ số ngày (ví dụ: Trong các ngày 05 và 06 tháng 12...); nếu số ngày từ 03 ngày trở lên thì ghi từ ngày đến ngày (ví dụ: Trong các ngày 05 đến 07 tháng 12 năm ...); nếu khác tháng mà xét xử liên tục thì ghi từ ngày ... tháng ... đến ngày ... tháng ... (ví dụ: Trong các ngày từ ngày 28 tháng 11 đến ngày 02 tháng 12 năm ...), nếu không xét xử liên tục thì ghi các ngày của từng tháng (ví dụ: Trong các ngày 30, 31 tháng 3 và các ngày 04, 05 tháng 4 năm ...).</p>
+            <p>(10) Nếu xét xử kín thì thay cụm từ "công khai" bằng từ "kín".</p>
+            <p>(11) Ô thứ nhất ghi số thụ lý, ô thứ hai ghi năm thụ lý (ví dụ: số 19/2017/TLST-HC).</p>
+            <p>(12) Ghi như hướng dẫn tại điểm (4).</p>
+            <p>(13) Người khởi kiện: Ghi họ tên, địa chỉ cụ thể của người khởi kiện.</p>
+            <p>(14) Người đại diện hợp pháp của người khởi kiện: Ghi họ tên, địa chỉ cụ thể.</p>
+            <p>(15) Người bảo vệ quyền và lợi ích hợp pháp của người khởi kiện: Ghi họ tên, địa chỉ cụ thể.</p>
+            <p>(27) Tùy từng trường hợp mà ghi rõ các căn cứ pháp luật để ra quyết định.</p>
+            <p>(28) Quyết định của Hội đồng xét xử về từng vấn đề phải giải quyết trong vụ án, về áp dụng biện pháp khẩn cấp tạm thời, về án phí, chi phí tố tụng (nếu có) và quyền kháng cáo đối với bản án; trường hợp có quyết định phải thi hành ngay thì phải ghi rõ quyết định đó.</p>
+            <p>(29) Phần cuối cùng của bản án, đối với bản án được thông qua tại phòng nghị án thì phải có đầy đủ chữ ký, họ tên của các thành viên Hội đồng xét xử (bản án này phải lưu vào hồ sơ vụ án); đối với bản án để gửi cho các đương sự, cơ quan, tổ chức và Viện kiểm sát thì ghi như sau:</p>
+            <p><strong>Nơi nhận:</strong><br>(Ghi những nơi mà Tòa án cấp sơ thẩm phải giao hoặc gửi bản án theo quy định tại Điều 196 của Luật TTHC).</p>
+        </div>
     </div>
 </body>
 </html>
