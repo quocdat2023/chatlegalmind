@@ -33,6 +33,9 @@
 	<!-- App Css-->
 	<link href="https://themesdesign.in/chaton/layouts/assets/css/app.min.css" id="app-style" rel="stylesheet"
 		type="text/css" />
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 	<style>
 		.bg-primary {
@@ -4088,10 +4091,6 @@
                                     </div>
                                     <div class="flex-grow-1 overflow-hidden">
                                         <h5 class="fs-14 mb-1"><a href="#" class="text-truncate p-0">${doc.source}</a></h5>
-                                        <div class="d-flex align-items-center">
-                                            <img src="https://cdn-icons-png.flaticon.com/512/5519/5519863.png" alt="" class="avatar-xs me-2" style="width: 15px; height: 15px">
-                                            <p class="text-muted text-truncate fs-13 mb-0">${Number(doc.distance).toFixed(2)}</p>
-                                        </div>
                                     </div>
                                 </div>
                             </h6>
@@ -4113,10 +4112,6 @@
                                     </div>
                                     <div class="flex-grow-1 overflow-hidden">
                                         <h5 class="fs-14 mb-1"><a href="#" class="text-truncate p-0">${doc.source}</a></h5>
-                                        <div class="d-flex align-items-center">
-                                            <img src="https://cdn-icons-png.flaticon.com/512/5519/5519863.png" alt="" class="avatar-xs me-2" style="width: 15px; height: 15px">
-                                            <p class="text-muted text-truncate fs-13 mb-0">${Number(doc.distance).toFixed(2)}</p>
-                                        </div>
                                     </div>
                                 </div>
                             </h6>
@@ -4258,22 +4253,6 @@
 				.replace(/'/g, "&#039;");
 		}
 
-		// Helper để bao toàn bộ HTML vào khuôn chuẩn
-		function wrapFullHtml(contentHtml) {
-			return `
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>Bản án</title>
-</head>
-<div class="judgment-body">
-${contentHtml}
-</body>
-</html>
-    `.trim();
-		}
-
 		async function submitJudgment() {
 			// Get and sanitize input
 			const messageInput = document.querySelector('.message_input');
@@ -4412,8 +4391,8 @@ ${contentHtml}
                             </div>
                             <div class="align-self-start d-flex"> 
 								<button type="button" class="btn btn-link text-decoration-none btn-lg waves-effect viewchitiet" id="viewchitiet" data-html="${encodeHtml(cleanHtml)}">
-													<i class="fa fa-book align-middle"></i>
-								</button>                          
+									<i class="fa fa-book align-middle"></i>
+								</button>                     
                             </div>
                             <div class="conversation-name">
                                 <small class="text-muted time">${new Date().toLocaleTimeString()}</small>
@@ -4532,7 +4511,7 @@ ${contentHtml}
     </style>
 	</head>
 	<body>
-		<div class="judgment-body">
+    	<div class="judgment-body" id="judgmentBody" contenteditable="false">
 			${contentHtml}
 		</div>
 	</body>

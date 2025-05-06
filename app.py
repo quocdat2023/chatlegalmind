@@ -308,7 +308,7 @@ Bạn là chuyên gia tư vấn pháp luật với hơn 30 năm kinh nghiệm tr
 {question}
 
 **Thông tin tham khảo (bản án tương đồng):**  
-{top_banan_docs if top_banan_docs else "Không tìm thấy bản án phù hợp. Phân tích dựa trên các quy định pháp luật hiện hành và nguyên tắc pháp lý chung."}
+{top_banan_sum if top_banan_sum else "Không tìm thấy bản án phù hợp. Phân tích dựa trên các quy định pháp luật hiện hành và nguyên tắc pháp lý chung."}
 
 **Thông tin tham khảo (án lệ tương đồng):**  
 {top_anle_docs if top_anle_docs else "Không tìm thấy án lệ phù hợp. Phân tích dựa trên các quy định pháp luật hiện hành và nguyên tắc pháp lý chung."}
@@ -316,6 +316,7 @@ Bạn là chuyên gia tư vấn pháp luật với hơn 30 năm kinh nghiệm tr
 **Hướng dẫn trả lời chi tiết:**
 
 1. **Tổng quan về các bản án, án lệ tương đồng:**  
+   - Chỉ ra rõ thông tin tham khảo từ bản án, án lệ tương đồng đã được cung cấp.
    - Nếu có thông tin chi tiết về bản án hoặc án lệ, trình bày ngắn gọn tên, bối cảnh, và nguồn gốc, làm rõ sự liên quan đến vấn đề pháp lý được đặt ra.  
    - Xác định loại tranh chấp (hợp đồng, dân sự, thương mại, v.v.) và các yếu tố pháp lý trọng tâm, nhấn mạnh tính phù hợp với câu hỏi.  
    - Nếu thông tin bản án hoặc án lệ chỉ có tên hoặc số hiệu, nêu rõ rằng thông tin chi tiết không khả dụng và chuyển sang phân tích dựa trên quy định pháp luật hiện hành.
@@ -344,7 +345,7 @@ Bạn là chuyên gia tư vấn pháp luật với hơn 30 năm kinh nghiệm tr
 - Không dùng từ giả sử, ví dụ. 
 - Bỏ phần chào hỏi, giới thiệu mình là ai. 
 - Không cần nêu quy trình phân tích, không giới thiệu 30 năm kinh nghiệm.
-- Nếu xác định được bản án hay án lệ không phù hợp hãy bỏ quan, không đề cập đến trong câu trả lời.
+- Nếu xác định được bản án hay án lệ không phù hợp hãy bỏ qua, không đề cập đến trong câu trả lời.
 - Phân tích phải kết hợp chặt chẽ giữa lý thuyết pháp lý và thực tiễn vụ án (nếu có), đảm bảo tính chi tiết và thực tiễn.  
 - Nếu thông tin bản án hoặc án lệ không đủ chi tiết, tập trung vào phân tích pháp lý dựa trên các quy định pháp luật hiện hành.  
 - Trình bày rõ ràng, súc tích, sử dụng ngôn ngữ pháp lý chính xác, giúp người đọc dễ dàng áp dụng vào tình huống pháp lý thực tế.
@@ -428,7 +429,7 @@ Dưới đây là **thông tin vụ án** để bạn dựa vào đó và soạn
 - Số bản án và năm ban hành (2) nằm trên header bên trái  và in đậm.
 - Ngày tuyên án (3) nằm trên header bên trái và in đậm.
 - V/v... (4) nằm trên header bên trái và in đậm.
-- Quốc hiệu "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM" in đậm, nằm trên header bên phải ngang hàng với (1)(2)(3)(4) và căn giữa.
+- Quốc hiệu "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM" in đậm, nằm trên header bên phải ngang hàng với (1),(2),(3),(4) và căn giữa.
 - Tiêu ngữ "Độc lập - Tự do - Hạnh phúc" được in đậm, không in hoa toàn bộ, chỉ in hoa chữ cái đầu mỗi từ,  nằm trên header về phía bên phải ngang hàng với (1)(2)(3)(4) và căn giữa.
 - Bắt buộc có dòng chữ "NHÂN DANH" chứ không phải "NHÂN DÂN" nằm giữa, in đậm, viết in hoa toàn bộ.
 - Bắt buộc có dòng chữ "NƯỚC CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM" nằm giữa, in đậm, viết in hoa toàn bộ.
